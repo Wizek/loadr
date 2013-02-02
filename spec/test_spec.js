@@ -58,8 +58,18 @@ var parse = function(str) {
 //     console.log('BEFORE')
 //   })
   // afterEach(function() {})
+
+var cnt = 0
+var done = function(expected) {
+  expect(cnt).toBe(expected)
+}
+
 describe('loader', function() {
   beforeEach(module('modules'))
+
+  afterEach(function() {
+    cnt = 0
+  })
   describe('parser', function() {
     it('should accept any kind of whitespace', function() {
 
@@ -74,55 +84,125 @@ describe('loader', function() {
     })
   })
 
-  var dependencyMap
+  // var dependencyMap
 
   var charSplit = function(str) {
     return str.split('')
   }
   describe('recursive resolver', function() {
-    it('should resolve recursively', function() {
-      module(function($provide) {
-        dependencyMap =
-          { 'a': ['b']
-          , 'c': ['b']
-          , 'b': []
-          , 'd': ['e']
-          , 'e': ['f']
-          , 'f': []
-          , 'g': ['a','c']
+    beforeEach(module(function($provide) {
+      var dependencyMap =
+        { 'a': ['b']
+        , 'c': ['b']
+        , 'b': []
+        , 'd': ['e']
+        , 'e': ['f']
+        , 'f': []
+        , 'g': ['a','c']
+        }
+      $provide.value('dependencyMap', dependencyMap); // override version here
+    }))
+    beforeEach(module(function($provide) {
+      var list = []
+      var onNextTick = function(cb) {
+        return cb()
+        // console.log(cb)
+        // list.push(cb)
+      }
+      $provide.value('onNextTick', onNextTick)
+      var flushNextTick = function() {
+        console.log(0.25, list.length)
+        while (list.length) {
+          list.pop()()
+        }
+      }
+    }))
+    describe('sync', function() {
+      it('should resolve recursively', function() {
+
+        inject(function(resolveSync) {
+          function test (a, b) {
+            expect(resolveSync(charSplit(a))).toEqual(charSplit(b))
           }
-        $provide.value('dependencyMap', dependencyMap); // override version here
+          test('f',  'f')
+          test('e',  'fe')
+          test('d',  'fed')
+          test('a',  'ba')
+          test('ac', 'babc')
+          test('df', 'fedf')
+          test('d',  'fed')
+          test('g',  'babcg')
+
+          // var t
+          // t = ['a']
+          // t = [{name: 'a', requires: ['b']}]
+          // t = [{name: 'a', requires: [{name:'b', requires:[]}]}]
+        })
       })
-
-      inject(function(resolveSync) {
-        expect(resolveSync(['f']))       .toEqual(charSplit('f'))
-        expect(resolveSync(['e']))       .toEqual(charSplit('fe'))
-        expect(resolveSync(['d']))       .toEqual(charSplit('fed'))
-        expect(resolveSync(['a']))       .toEqual(charSplit('ba'))
-        expect(resolveSync(['a', 'c']))  .toEqual(charSplit('babc'))
-        expect(resolveSync(['d', 'f']))  .toEqual(charSplit('fedf'))
-        expect(resolveSync(['d']))       .toEqual(charSplit('fed'))
-        expect(resolveSync(['g']))       .toEqual(charSplit('babcg'))
-
-        // var t
-        // t = ['a']
-        // t = [{name: 'a', requires: ['b']}]
-        // t = [{name: 'a', requires: [{name:'b', requires:[]}]}]
+    })
+    describe('async', function() {
+      beforeEach(module(function($provide) {
+        $provide.factory('dependenciesOf', function(q, dependenciesOfSync) {
+          return function(name) {
+            var d = q.defer()
+            d.resolve(dependenciesOfSync(name))
+            return d.promise
+          }
+        })
+      }))
+      describe('dependenciesOf', function() {
+        it('should use q and dependencyMap', function() {
+          inject(function(dependenciesOf) {
+            function test (a, b) {
+              dependenciesOf(a).then(function(v) {
+                expect(v).toEqual(b)
+                cnt++
+              })
+            }
+            // expect(0).toBe(0)
+            // console.log(jasmine.getEnv())
+            test('a', ['b'])
+            test('g', ['a', 'c'])
+            done(2)
+          })
+        })
+      })
+      it('should resolve recursively', function() {
+        inject(function(resolve, q) {
+          function test(a, b) {
+            resolve(charSplit(a)).then(function(v) {
+              expect(v).toEqual(charSplit(b))
+              cnt++
+            })
+          }
+          test('',   '')
+          test('f',  'f')
+          test('e',  'fe')
+          test('d',  'fed')
+          test('a',  'ba')
+          test('ac', 'babc')
+          test('df', 'fedf')
+          test('d',  'fed')
+          test('g',  'babcg')
+          done(9)
+        })
       })
     })
   })
 
   describe('reducer', function() {
     it('should reduce', inject(function(reduce) {
-      expect(reduce(charSplit('f')))      .toEqual(charSplit('f'))
-      expect(reduce(charSplit('fe')))     .toEqual(charSplit('fe'))
-      expect(reduce(charSplit('fed')))    .toEqual(charSplit('fed'))
-      expect(reduce(charSplit('ba')))     .toEqual(charSplit('ba'))
-      expect(reduce(charSplit('babc')))   .toEqual(charSplit('bac'))
-      expect(reduce(charSplit('fedf')))   .toEqual(charSplit('fed'))
-      expect(reduce(charSplit('fed')))    .toEqual(charSplit('fed'))
-      expect(reduce(charSplit('babcg')))  .toEqual(charSplit('bacg'))
-
+      function test (a, b) {
+        expect(reduce(charSplit(a))).toEqual(charSplit(b))
+      }
+      test('f',     'f')
+      test('fe',    'fe')
+      test('fed',   'fed')
+      test('ba',    'ba')
+      test('babc',  'bac')
+      test('fedf',  'fed')
+      test('fed',   'fed')
+      test('babcg', 'bacg')
     }))
   })
 })
