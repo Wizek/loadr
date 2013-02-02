@@ -1,16 +1,16 @@
-var rewquire = require("rewire")
+var rewquire = require//("rewire")
 // var chai = rewquire('chai')
 var modules = rewquire('../modules')
 var resolve = modules.resolve
 var di = require('ng-di')
 var x = jasmine
 var mocks = require('ng-di/dist/ng-di-mocks')
-console.log(x === jasmine, mocks)
+// console.log(x === jasmine, mocks)
 var temp = mocks.init(jasmine, global)
 var module = temp.module
 var inject = temp.inject
 
-console.log(mocks)
+// console.log(mocks)
 // di.module('main')
 // var di = require('./node_modules/ng-di/dist/ng-di.js')
 
@@ -57,7 +57,7 @@ var parse = function(str) {
 //   beforeEach(function() {
 //     console.log('BEFORE')
 //   })
-  afterEach(function() {})
+  // afterEach(function() {})
 describe('loader', function() {
   beforeEach(module('modules'))
   describe('parser', function() {
@@ -74,42 +74,55 @@ describe('loader', function() {
     })
   })
 
-  var deps =
-    { 'backbone': ['underscore']
-    , 'underscore': []
-    , 'proj_x': ['underscore']
-    , 'foo': ['bar']
-    , 'bar': ['baz']
-    , 'baz': []
-    }
+  var dependencyMap
 
+  var charSplit = function(str) {
+    return str.split('')
+  }
   describe('recursive resolver', function() {
     it('should resolve recursively', function() {
       module(function($provide) {
-        $provide.value('xxx', 'overridden'); // override version here
+        dependencyMap =
+          { 'a': ['b']
+          , 'c': ['b']
+          , 'b': []
+          , 'd': ['e']
+          , 'e': ['f']
+          , 'f': []
+          , 'g': ['a','c']
+          }
+        $provide.value('dependencyMap', dependencyMap); // override version here
       })
 
-      inject(function(resolve, yyy) {
-        console.log(yyy)
-        // resolve(['baz']).should.eql(['baz'])
-        // resolve(['bar']).should.eql(['baz', 'bar'])
+      inject(function(resolveSync) {
+        expect(resolveSync(['f']))       .toEqual(charSplit('f'))
+        expect(resolveSync(['e']))       .toEqual(charSplit('fe'))
+        expect(resolveSync(['d']))       .toEqual(charSplit('fed'))
+        expect(resolveSync(['a']))       .toEqual(charSplit('ba'))
+        expect(resolveSync(['a', 'c']))  .toEqual(charSplit('babc'))
+        expect(resolveSync(['d', 'f']))  .toEqual(charSplit('fedf'))
+        expect(resolveSync(['d']))       .toEqual(charSplit('fed'))
+        expect(resolveSync(['g']))       .toEqual(charSplit('babcg'))
 
-        var t
-        t = ['backbone']
-        t = [{name: 'backbone', requires: ['underscore']}]
-        t = [{name: 'backbone', requires: [{name:'underscore', requires:[]}]}]
+        // var t
+        // t = ['a']
+        // t = [{name: 'a', requires: ['b']}]
+        // t = [{name: 'a', requires: [{name:'b', requires:[]}]}]
       })
     })
   })
 
   describe('reducer', function() {
-    it('should reduce', function() {
-      expect(1).toBe(1)
+    it('should reduce', inject(function(reduce) {
+      expect(reduce(charSplit('f')))      .toEqual(charSplit('f'))
+      expect(reduce(charSplit('fe')))     .toEqual(charSplit('fe'))
+      expect(reduce(charSplit('fed')))    .toEqual(charSplit('fed'))
+      expect(reduce(charSplit('ba')))     .toEqual(charSplit('ba'))
+      expect(reduce(charSplit('babc')))   .toEqual(charSplit('bac'))
+      expect(reduce(charSplit('fedf')))   .toEqual(charSplit('fed'))
+      expect(reduce(charSplit('fed')))    .toEqual(charSplit('fed'))
+      expect(reduce(charSplit('babcg')))  .toEqual(charSplit('bacg'))
 
-    })
-    it('should reduce', function() {
-      expect(1).toBe(1)
-
-    })
+    }))
   })
 })
