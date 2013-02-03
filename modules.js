@@ -14,6 +14,16 @@ di.module('modules', [])
   }
 })
 
+.factory('nameParser', function() {
+  return function nameParser (name) {
+    var o =
+      { name: name
+      , path: 'sources/'+name+'.js'
+      }
+    return o
+  }
+})
+
 .factory('sourceParser', function() {
   return function(str) {
     var list = []

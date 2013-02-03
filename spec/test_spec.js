@@ -1,30 +1,12 @@
 var rewquire = require//("rewire")
-// var chai = rewquire('chai')
 var modules = rewquire('../modules')
 var resolve = modules.resolve
 var di = require('ng-di')
-var x = jasmine
 var mocks = require('ng-di/dist/ng-di-mocks')
-// console.log(x === jasmine, mocks)
+
 var temp = mocks.init(jasmine, global)
 var module = temp.module
 var inject = temp.inject
-
-// console.log(mocks)
-// di.module('main')
-// var di = require('./node_modules/ng-di/dist/ng-di.js')
-
-// console.log(require('components/angular/angular.js'))
-// console.log(modules.__get__('cc'))
-// di.injector(['modules']).invoke(function(resolve) {
-//   console.log(resolve)
-// })
-// var ddescribe = describe.only
-// var xdescribe = describe.skip
-// var iit = it.only
-// var xit = it.skip
-// asdasd
-// chai.should()
 
 var f = {}
 f.enum = function(start, end) {
@@ -64,65 +46,126 @@ var done = function(expected) {
   expect(cnt).toBe(expected)
 }
 
+function superset (a, b) {
+  if (typeof a != 'object' || typeof b != 'object') {
+    return false
+  }
+  for (var key in b) if (b.hasOwnProperty(key)) {
+    if (a[key] !== b[key]) {
+      return false
+    }
+  }
+  return true
+}
+
 beforeEach(module('modules'))
 beforeEach(function() {
   cnt = 0
+  this.addMatchers({
+    toBeSupersetOf: function(subset) {
+      return superset(this.actual, subset)
+    }
+  });
 })
 
+function injectInto (o, ary) {
+  var fn = function() {
+    for (var i = 0; i < arguments.length; i++) {
+      o[ary[i]] = arguments[i]
+    }
+  }
+  fn.$inject = ary
+  return inject(fn)
+}
 describe('hereDoc', function() {
-  it('try', inject(function(hereDoc) {
-    expect(hereDoc(function() {/**/})).toBe("")
-    expect(hereDoc(function() {/*
-    */})).toBe("")
-    expect(hereDoc(function() {/*
+  var j = {}
+  beforeEach(injectInto(j, ['hereDoc']))
 
-    */})).toBe("")
+  function test (a, b) {
+    expect(j.hereDoc(a)).toBe(b)
+  }
+  it('should work on "empty" input', function() {
+    test(function() {/**/}, "")
+    test(function() {/*
+    */}, "")
+    test(function() {/*
 
-
-    expect(hereDoc(function() {/*
-a
-    */})).toBe("a")
-
-
-    expect(hereDoc(function() {/*
-a b
-cd ef
-    */})).toBe("a b\ncd ef")
-
-
-    expect(hereDoc(function() {/*
-  a b
-  cd ef
-    */})).toBe("a b\ncd ef")
-
-
-    expect(hereDoc(function() {/*
+    */}, "")
+  })
+  xit('should work on unindented input', function() {
+    //    expect(hereDoc(function() {/*
+    //a
+    //    */})).toBe("a")
+    //
+    //
+    //    expect(hereDoc(function() {/*
+    //a b
+    //cd ef
+    //    */})).toBe("a b\ncd ef")
+    //
+    //
+    //    expect(hereDoc(function() {/*
+    //  a b
+    //  cd ef
+    //    */})).toBe("a b\ncd ef")
+  })
+  it('should remove indentation', function() {
+    test(function() {/*
       a b
       cd ef
-    */})).toBe("a b\ncd ef")
-
-
-    expect(hereDoc(function() {/*
+    */}, "a b\ncd ef")
+    test(function() {/*
       a b
         cd ef
-    */})).toBe("a b\n  cd ef")
+    */}, "a b\n  cd ef")
+  })
+})
 
-  }))
+describe('superset', function() {
+  it('should ', function() {
+    expect(superset({}, {})).toBeTruthy()
+    expect(superset({a:1}, {})).toBeTruthy()
+    expect(superset({a:1}, {a:1})).toBeTruthy()
+
+    expect(superset({}, {a:1})).not.toBeTruthy()
+    expect(superset({a:1}, {a:2})).not.toBeTruthy()
+    expect(superset({a:1}, {a:1, b:2})).not.toBeTruthy()
+  })
+  it('should ', function() {
+    expect(typeof expect().toBeSupersetOf).toBe('function')
+    expect(function() {
+      expect({a:1}).toBeSupersetOf({a:1})
+    }).not.toThrow()
+  })
 })
 
 describe('loader', function() {
-  describe('parser', function() {
-    it('should accept any kind of whitespace', function() {
+  var charSplit = function(str) { return str.split('') }
 
-      // expect(1).toBe(2)
-      var t = function(s) {
-        return {name:s}
-      }
-      expect(parse('m1 m2')).toEqual(f.map(t, ['m1', 'm2']))
-      expect(parse('m1   m3')).toEqual(f.map(t, ['m1', 'm3']))
-      expect(parse('m1 \n  m4')).toEqual(f.map(t, ['m1', 'm4']))
-      expect(parse('a\n  b\n  c')).toEqual(f.map(t, ['a', 'b', 'c']))
+  describe('parser', function() {
+    describe('name-level', function() {
+      var j = {}
+      beforeEach(injectInto(j, ['nameParser']))
+      function test (a,b) { expect(j.nameParser(a)).toBeSupersetOf(b) }
+      it('', function() {
+        test('name', {name: 'name'})
+        test('name', {path: 'sources/name.js'})
+      })
     })
+
+    describe('url-level', function() {
+      it('should accept any kind of whitespace', function() {
+        // expect(1).toBe(2)
+        var t = function(s) {
+          return {name:s}
+        }
+        expect(parse('m1 m2')).toEqual(f.map(t, ['m1', 'm2']))
+        expect(parse('m1   m3')).toEqual(f.map(t, ['m1', 'm3']))
+        expect(parse('m1 \n  m4')).toEqual(f.map(t, ['m1', 'm4']))
+        expect(parse('a\n  b\n  c')).toEqual(f.map(t, ['a', 'b', 'c']))
+      })
+    })
+
     describe('file-level', function() {
       var sourceParser
       var hereDoc
@@ -184,11 +227,6 @@ describe('loader', function() {
     })
   })
 
-  // var dependencyMap
-
-  var charSplit = function(str) {
-    return str.split('')
-  }
   describe('recursive resolver', function() {
     beforeEach(module(function($provide) {
       var dependencyMap =
