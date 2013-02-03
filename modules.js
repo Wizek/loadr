@@ -196,6 +196,8 @@ di.module('modules', [])
   }
 })
 
+.value('noop', function noop(){})
+
 .value('logFactory_whiteList', /.*/)
 //.value('logFactory_whiteList', /!|.*Ctrl|run/)
 .value('logFactory_piercingMethods', {warn:true, error:true})
@@ -204,7 +206,8 @@ di.module('modules', [])
   [ /*'$log'
   ,*/ 'logFactory_whiteList'
   , 'logFactory_piercingMethods'
-  , function (/*$log, */whiteList, piercing)
+  , 'noop'
+  , function (/*$log, */whiteList, piercing, noop)
 {
   piercing = piercing || {}
   whiteList = whiteList || /.*/
@@ -220,7 +223,7 @@ di.module('modules', [])
 
       return (piercing[fnName] || match)
         ? log[fnName].bind(log, '[' + prefix + ']')
-        : angular.noop
+        : noop
     }
 
     return (
@@ -256,6 +259,20 @@ di.module('modules', [])
   return ifPattern(function(ifVal) { return typeof ifVal == 'function' })
 })
 
+
+.factory('superset', function() {
+  return function superset (a, b) {
+    if (typeof a != 'object' || typeof b != 'object') {
+      return false
+    }
+    for (var key in b) if (b.hasOwnProperty(key)) {
+      if (a[key] !== b[key]) {
+        return false
+      }
+    }
+    return true
+  }
+})
 
 
 .factory('q', function(onNextTick, forEach, isFunction) {

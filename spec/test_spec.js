@@ -1,65 +1,40 @@
-var rewquire = require//("rewire")
-var modules = rewquire('../modules')
-var resolve = modules.resolve
 var di = require('ng-di')
-var mocks = require('ng-di/dist/ng-di-mocks')
-var _ = require('underscore')
-
-var temp = mocks.init(jasmine, global)
-var module = temp.module
-var inject = temp.inject
-
-var f = {}
-f.enum = function(start, end) {
-  var list = []
-  while (start <= end) {
-    list.push(start++)
-  }
-  return list
-}
-f.map = function(fn, list) {
-  var list2 = []
-  for (var i = 0; i < list.length; i++) {
-    list2[i] = fn(list[i])
-  }
-  return list2
-}
+var _moduleBkp = module
+require('ng-di/dist/ng-di-mocks')
+require('../modules')
 
 
-var parse = function(str) {
-}
-
-// var resolve = function(ary) {
-//   return ary
-// }
-// expect(0).toBe(1)
-// console.log(1)
-//   beforeEach(function() {
-//     console.log('BEFORE')
-//   })
-  // afterEach(function() {})
-
+var module = di.mock.module
 var cnt
-var done = function(expected) {
-  expect(cnt).toBe(expected)
-}
-
-function superset (a, b) {
-  if (typeof a != 'object' || typeof b != 'object') {
-    return false
-  }
-  for (var key in b) if (b.hasOwnProperty(key)) {
-    if (a[key] !== b[key]) {
-      return false
+var done = function(expected) { expect(cnt).toBe(expected) }
+var injectInto = function(o, ary) {
+  console.warn('injectInto is deprecated')
+  var fn = function() {
+    for (var i = 0; i < arguments.length; i++) {
+      o[ary[i]] = arguments[i]
     }
   }
-  return true
+  fn.$inject = ary
+  return inject(fn)
 }
 
+var get = di.injector(['modules']).get
+var superset = get('superset')
+var hereDoc = get('hereDoc')
+
+
 beforeEach(module('modules'))
+
+// Suppress logfactory
+beforeEach(module(function($provide) {
+  $provide.value('logFactory_whiteList', /$^/)
+}))
+
+// Reset "async" callback count
+beforeEach(function() { cnt = 0 })
+
+// Add custom matchers
 beforeEach(function() {
-  cnt = 0
-  // console.log(111, this)
   this.addMatchers(
     { toBeSupersetOf: function(subset) {
         return superset(this.actual, subset)
@@ -82,7 +57,7 @@ beforeEach(function() {
             return 'Expected promised value ' + jasmine.pp(value) + " to equal " + jasmine.pp(expected)
           }
           // this.actual = value
-          var patchedEnv = _.extend({}, this, {actual: value})
+          var patchedEnv = require('underscore').extend({}, this, {actual: value})
           return matchers.toEqual.call(patchedEnv, expected)
         }
       }
@@ -90,24 +65,24 @@ beforeEach(function() {
   )
 })
 
-function injectInto (o, ary) {
-  var fn = function() {
-    for (var i = 0; i < arguments.length; i++) {
-      o[ary[i]] = arguments[i]
-    }
-  }
-  fn.$inject = ary
-  return inject(fn)
-}
-var utils = di.injector(['modules'])
-var hereDoc = utils.get('hereDoc')
+// onNextTick sould be instantanous (sync) to avoid any and all asyncronity.
+//   In other words, to eas testing by a great deal
+//
+// TODO Investigate. Can this cause any problems?
+//   Because Normally nt() is always async...
+beforeEach(module(function($provide) {
+  $provide.value('onNextTick', function (cb){ return cb() })
+}))
+
+
 
 describe('hereDoc', function() {
-  var j = {}
-  beforeEach(injectInto(j, ['hereDoc']))
-
+  var hereDoc
+  beforeEach(inject(function() {
+    hereDoc = inject.get('hereDoc')
+  }))
   function test (a, b) {
-    expect(j.hereDoc(a)).toBe(b)
+    expect(hereDoc(a)).toBe(b)
   }
   it('should work on "empty" input', function() {
     test(function() {/**/}, "")
@@ -146,6 +121,7 @@ describe('hereDoc', function() {
   })
 })
 
+
 describe('superset', function() {
   it('should ', function() {
     expect(superset({}, {})).toBeTruthy()
@@ -164,27 +140,13 @@ describe('superset', function() {
   })
 })
 
-beforeEach(module(function($provide) {
-  var list = []
-  var onNextTick = function(cb) {
-    return cb()
-    // list.push(cb)
-  }
-  $provide.value('onNextTick', onNextTick)
-  var flushNextTick = function() {
-    console.log(0.25, list.length)
-    while (list.length) {
-      list.pop()()
-    }
-  }
-}))
+
 describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
 
-
   describe('parser', function() {
     describe('url-level', function() {
-      it('should accept any kind of whitespace', inject(function(scriptTagSeparator) {
+      it('should accept any kind of whitespace as delimiter', inject(function(scriptTagSeparator) {
         function test (a, b) {
           expect(scriptTagSeparator(a)).toEqual(b)
         }
@@ -200,9 +162,7 @@ describe('loader', function() {
     })
 
     describe('name-level', function() {
-      var j = {}
-      beforeEach(injectInto(j, ['nameParser']))
-      function test (a,b) { expect(j.nameParser(a)).toBeSupersetOf(b) }
+      function test (a,b) { expect(get('nameParser')(a)).toBeSupersetOf(b) }
       it('', function() {
         test('name', {name: 'name'})
         test('name', {path: 'packages/name.js'})
@@ -271,7 +231,7 @@ describe('loader', function() {
     })
   })
 
-  describe('recursive resolver', function() {
+  describe('recursive-resolver', function() {
     beforeEach(module(function($provide) {
       var dependencyMap =
         { 'a': ['b']
@@ -320,7 +280,7 @@ describe('loader', function() {
       describe('dependenciesOf', function() {
         var mockFs
         var fileContent
-        var ifFunction = utils.get('ifFunction')
+        var ifFunction = get('ifFunction')
         beforeEach(module(function($provide) {
           /*\
            *  This is how one deals with spies!
