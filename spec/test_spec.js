@@ -1,7 +1,7 @@
 var di = require('ng-di')
 var _moduleBkp = module
 require('ng-di/dist/ng-di-mocks')
-require('../modules')
+require('../lib/modules')
 
 
 var module = di.mock.module
@@ -140,6 +140,13 @@ describe('superset', function() {
   })
 })
 
+describe('onNextTick', function() {
+  it('should exist', function() {
+    inject(function(onNextTick) {
+      expect(onNextTick).toBeDefined()
+    })
+  })
+})
 
 describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
