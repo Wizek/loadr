@@ -1,15 +1,11 @@
 
-/**
- * Module dependencies.
- */
-
+require('./lib/node_utils')
 var express = require('express')
-  , http = require('http')
-  , path = require('path')
-  , uglifyJS = require('uglify-js')
-  , di = require('ng-di')
+var http = require('http')
+var path = require('path')
+var di = require('ng-di')
 
-require('./modules')
+require('./lib/modules')
 
 di.injector(['modules']).invoke(function
   ( scriptTagSeparator
@@ -41,16 +37,6 @@ app.configure('development', function(){
   app.use(express.errorHandler());
 })
 
-function resolveDependencies (array) {
-  // TODO expand
-  return array
-}
-
-function weedOutDuplicates (array) {
-  // TODO expand
-  return array
-}
-
 function out (res, msg) {
   console.log(msg)
   // res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
@@ -58,6 +44,7 @@ function out (res, msg) {
   return msg
 }
 
+// TODO factor the logic in here out to a single promise
 app.get('/load', function(req, res) {
   res.set('content-type', 'text/javascript')
   var packages = scriptTagSeparator(req.query.packages)
@@ -81,8 +68,6 @@ app.get('/load', function(req, res) {
       res.send(v)
       // res.end('\n\nend</ul>')
     })
-
-
 })
 
 http.createServer(app).listen(app.get('port'), function(){
@@ -91,39 +76,3 @@ http.createServer(app).listen(app.get('port'), function(){
 
 })
 
-var f = {}
-f.enum = function(start, end) {
-  var list = []
-  while (start <= end) {
-    list.push(start++)
-  }
-  return list
-}
-f.map = function(fn, list) {
-  var list2 = []
-  for (var i = 0; i < list.length; i++) {
-    list2[i] = fn(list[i])
-  }
-  return list2
-}
-
-
-void function (ctx) {
-  ctx.c = function() {
-    var l = arguments.length,
-      message = 'Callback called with ' + l +
-        ' argument' + (l === 1 ? '' : 's') + (l > 0 ? ':\n' : '');
-
-    for (var i = 0; i < 10; i++) {
-      if (i < arguments.length) {
-        ctx['_' + i] = arguments[i];
-        message += '_' + i + ' = ' + arguments[i] + '\n';
-      } else {
-        if (ctx.hasOwnProperty('_' + i)) {
-          delete ctx['_' + i];
-        }
-      }
-    }
-    console.log(message);
-  }
-}(global)
