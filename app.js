@@ -7,6 +7,16 @@ var express = require('express')
   , http = require('http')
   , path = require('path')
   , uglifyJS = require('uglify-js')
+  , di = require('ng-di')
+
+require('./modules')
+
+di.injector(['modules']).invoke(function
+  ( scriptTagSeparator
+  , nameParser
+  , resolve
+  )
+{
 
 var app = express()
 
@@ -36,21 +46,33 @@ function weedOutDuplicates (array) {
   return array
 }
 
-app.get('*', function(req, res) {
-  console.log('req.url', req.url)
-  var list = decodeURIComponent(req.url).split(/\s+/)
-  list.shift()
-  list = f.map(function(v) {return "repo/"+v+"/index.js"}, list)
-  console.log('list', list)
-  var sources = uglifyJS.minify(list, {compress: false})
-  // res.send('console.log('+JSON.stringify(list)+')')
-  res.send(sources.code)
+function out (res, msg) {
+  console.log(msg)
+  res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
+  return msg
+}
+
+app.get('/load', function(req, res) {
+  res.set('content-type', 'text/html')
+  res.write('<ul>')
+
+  var packages = req.query.packages
+  var c = out.bind(this, res)
+  c([req.url, req.query])
+  c(packages)
+  c(scriptTagSeparator(packages))
+  c(nameParser(scriptTagSeparator(packages)[0]))
+  c(resolve(scriptTagSeparator(packages)))
+
+
+  res.end('\n\nend</ul>')
 })
 
 http.createServer(app).listen(app.get('port'), function(){
   console.log("Express server listening on port " + app.get('port'));
 });
 
+})
 
 var f = {}
 f.enum = function(start, end) {
@@ -67,3 +89,24 @@ f.map = function(fn, list) {
   }
   return list2
 }
+
+
+void function (ctx) {
+  ctx.c = function() {
+    var l = arguments.length,
+      message = 'Callback called with ' + l +
+        ' argument' + (l === 1 ? '' : 's') + (l > 0 ? ':\n' : '');
+
+    for (var i = 0; i < 10; i++) {
+      if (i < arguments.length) {
+        ctx['_' + i] = arguments[i];
+        message += '_' + i + ' = ' + arguments[i] + '\n';
+      } else {
+        if (ctx.hasOwnProperty('_' + i)) {
+          delete ctx['_' + i];
+        }
+      }
+    }
+    console.log(message);
+  }
+}(global)
