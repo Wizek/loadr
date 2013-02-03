@@ -14,13 +14,19 @@ di.module('modules', [])
   }
 })
 
-.factory('readFile', function(fs, q) {
+.factory('readFile', function(fs, q, logFactory) {
+  var console = logFactory('readFile')
+  console.log('init')
   return function readFile (path) {
     var d = q.defer()
-    fs.readFile(path, function(err, val) {
+    console.log('path:', path)
+    fs.readFile(path, 'utf8', function(err, val) {
+      // console.log('cb',arguments)
       if (err) {
+        console.warn(err)
         d.reject(err)
       } else {
+        // console.log(val)
         d.resolve(val)
       }
     })
@@ -31,6 +37,9 @@ di.module('modules', [])
 .factory('scriptTagSeparator', function(_) {
   return function scriptTagSeparator (str) {
     var list = str.split(/\s+/)
+    list = _.filter(list, function(v) {
+      return v != ''
+    })
     // var list2 = _.map(list, function(v) {
     //   return {name:v}
     // })
@@ -84,8 +93,11 @@ di.module('modules', [])
   }
 })
 
-.factory('resolve', function(dependenciesOf, _, q, transc) {
+.factory('resolve', function(dependenciesOf, _, q, transc, logFactory) {
+  var console = logFactory('resolve')
+  console.log('init')
   return function resolve (depList) {
+    console.log(depList)
     var d = q.defer()
 
     if (!depList.length) {
@@ -120,10 +132,14 @@ di.module('modules', [])
   return {}
 })
 
-.factory('dependenciesOf', function(q, readFile, sourceParser) {
+.factory('dependenciesOf', function(q, readFile, sourceParser, logFactory, nameParser) {
+  var console = logFactory('dependenciesOf')
+  console.log('init')
   return function(name) {
+    console.log('name:',name)
     var d = q.defer()
-    readFile()
+    var path = nameParser(name).path
+    readFile(path)
       .then(sourceParser, d.reject)
       .then(d.resolve, d.reject)
     return d.promise
@@ -179,6 +195,44 @@ di.module('modules', [])
     return obj;
   }
 })
+
+.value('logFactory_whiteList', /.*/)
+//.value('logFactory_whiteList', /!|.*Ctrl|run/)
+.value('logFactory_piercingMethods', {warn:true, error:true})
+
+.factory('logFactory',
+  [ /*'$log'
+  ,*/ 'logFactory_whiteList'
+  , 'logFactory_piercingMethods'
+  , function (/*$log, */whiteList, piercing)
+{
+  piercing = piercing || {}
+  whiteList = whiteList || /.*/
+
+  return function (prefix, parentLog) {
+    var log = parentLog || console//|| $log
+    var match = prefix.match(whiteList)
+
+    function e(fnName) {
+      if (!log[fnName]) {
+        fnName = 'log'
+      }
+
+      return (piercing[fnName] || match)
+        ? log[fnName].bind(log, '[' + prefix + ']')
+        : angular.noop
+    }
+
+    return (
+      { debug: e('debug')
+      , info:  e('info')
+      , log:   e('log')
+      , warn:  e('warn')
+      , error: e('error')
+      }
+    )
+  }
+}])
 
 .factory('q', function(onNextTick, forEach, isFunction) {
   // console.log('%%%%%%%%%%%%%', onNextTick)

@@ -191,6 +191,10 @@ describe('loader', function() {
         test('m1   m3',     ['m1', 'm3'])
         test('m1 \n  m4',   ['m1', 'm4'])
         test('a\n  b\n  c', ['a', 'b', 'c'])
+        test('',            [])
+        test(' ',           [])
+        test('  ',          [])
+        test(' m1 m2',      ['m1', 'm2'])
       }))
     })
 
@@ -360,8 +364,7 @@ describe('loader', function() {
               expect(dependenciesOf('x')).toThenEqual(b)
             }
 
-            test(function(){/*
-            */},  [])
+            test('',  [])
 
             test(function(){/*
               "require asd"
@@ -371,20 +374,13 @@ describe('loader', function() {
             test(function(){/*
               "require a"
                "require b'
-
               'require c"
-
               asd
-
               "require d"
               ddd
-
               var haha = "require e"
-
                   'require x'
-
             */}, 'adex'.split(''))
-
             done(3)
           })
         })

@@ -15,6 +15,10 @@ di.injector(['modules']).invoke(function
   ( scriptTagSeparator
   , nameParser
   , resolve
+  , readFile
+  , _
+  , q
+  , dependenciesOf
   )
 {
 
@@ -48,24 +52,33 @@ function weedOutDuplicates (array) {
 
 function out (res, msg) {
   console.log(msg)
-  res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
+  // res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
+  // res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
   return msg
 }
 
 app.get('/load', function(req, res) {
-  res.set('content-type', 'text/html')
-  res.write('<ul>')
-
-  var packages = req.query.packages
+  var packages = scriptTagSeparator(req.query.packages)
   var c = out.bind(this, res)
-  c([req.url, req.query])
-  c(packages)
-  c(scriptTagSeparator(packages))
-  c(nameParser(scriptTagSeparator(packages)[0]))
-  c(resolve(scriptTagSeparator(packages)))
+
+  resolve(packages)
+    .then(function(v) {
+      c([1, v])
+      return q.all(_.map(v, function(v) {
+        c([2, arguments])
+        return readFile(nameParser(v).path)
+      }))
+    })
+    .then(function(v) {
+      return v.join('\n;\n')
+    })
+    .then(function(v) {
+      c(v)
+      res.send(v)
+      // res.end('\n\nend</ul>')
+    })
 
 
-  res.end('\n\nend</ul>')
 })
 
 http.createServer(app).listen(app.get('port'), function(){
