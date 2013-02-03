@@ -234,6 +234,30 @@ di.module('modules', [])
   }
 }])
 
+
+.factory('ifPattern', function() {
+  return function(testFn) {
+    return function (ifVal) {
+      function elseFn(elseVal) {
+        return testFn(ifVal) ? ifVal : elseVal
+      }
+      return {else: elseFn, default: elseFn}
+    }
+  }
+})
+
+.factory('ifDefined', function(ifPattern) {
+  return ifPattern(function(ifVal) { return typeof ifVal != 'undefined' })
+})
+.factory('ifObject', function(ifPattern) {
+  return ifPattern(function(ifVal) { return typeof ifVal == 'object' })
+})
+.factory('ifFunction', function(ifPattern) {
+  return ifPattern(function(ifVal) { return typeof ifVal == 'function' })
+})
+
+
+
 .factory('q', function(onNextTick, forEach, isFunction) {
   // console.log('%%%%%%%%%%%%%', onNextTick)
   return qFactory(onNextTick, function(x) {throw x})

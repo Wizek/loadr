@@ -99,7 +99,8 @@ function injectInto (o, ary) {
   fn.$inject = ary
   return inject(fn)
 }
-var hereDoc = di.injector(['modules']).get('hereDoc')
+var utils = di.injector(['modules'])
+var hereDoc = utils.get('hereDoc')
 
 describe('hereDoc', function() {
   var j = {}
@@ -290,14 +291,14 @@ describe('loader', function() {
           function test (a, b) {
             expect(resolveSync(charSplit(a))).toEqual(charSplit(b))
           }
-          test('f',  'f')
-          test('e',  'fe')
-          test('d',  'fed')
-          test('a',  'ba')
-          test('ac', 'babc')
-          test('df', 'fedf')
-          test('d',  'fed')
-          test('g',  'babcg')
+          test('f'  ,'f')
+          test('e'  ,'fe')
+          test('d'  ,'fed')
+          test('a'  ,'ba')
+          test('ac' ,'babc')
+          test('df' ,'fedf')
+          test('d'  ,'fed')
+          test('g'  ,'babcg')
 
           // var t
           // t = ['a']
@@ -319,14 +320,15 @@ describe('loader', function() {
       describe('dependenciesOf', function() {
         var mockFs
         var fileContent
-
+        var ifFunction = utils.get('ifFunction')
         beforeEach(module(function($provide) {
           /*\
            *  This is how one deals with spies!
            *  Either way is correct.
           \*/
           mockFs = {}
-          mockFs.readFile = function(name, cb) {
+          mockFs.readFile = function(name, cb1, cb2) {
+            var cb = ifFunction(cb2).else(cb1)
             return cb(null, fileContent)
           }
           spyOn(mockFs, 'readFile').andCallThrough()
@@ -439,6 +441,7 @@ describe('loader', function() {
       test('fedf',  'fed')
       test('fed',   'fed')
       test('babcg', 'bacg')
+      test('aba',   'ab')
     }))
   })
 

@@ -17,6 +17,7 @@ di.injector(['modules']).invoke(function
   , resolve
   , readFile
   , _
+  , reduce
   , q
   , dependenciesOf
   )
@@ -58,8 +59,10 @@ function out (res, msg) {
 }
 
 app.get('/load', function(req, res) {
+  res.set('content-type', 'text/javascript')
   var packages = scriptTagSeparator(req.query.packages)
   var c = out.bind(this, res)
+  
 
   resolve(packages)
     .then(function(v) {
@@ -69,8 +72,9 @@ app.get('/load', function(req, res) {
         return readFile(nameParser(v).path)
       }))
     })
+    .then(reduce)
     .then(function(v) {
-      return v.join('\n;\n')
+      return v.join('\n;;\n\n')
     })
     .then(function(v) {
       c(v)
