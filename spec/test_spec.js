@@ -59,17 +59,58 @@ var parse = function(str) {
 //   })
   // afterEach(function() {})
 
-var cnt = 0
+var cnt
 var done = function(expected) {
   expect(cnt).toBe(expected)
 }
 
-describe('loader', function() {
-  beforeEach(module('modules'))
+beforeEach(module('modules'))
+beforeEach(function() {
+  cnt = 0
+})
 
-  afterEach(function() {
-    cnt = 0
-  })
+describe('hereDoc', function() {
+  it('try', inject(function(hereDoc) {
+    expect(hereDoc(function() {/**/})).toBe("")
+    expect(hereDoc(function() {/*
+    */})).toBe("")
+    expect(hereDoc(function() {/*
+
+    */})).toBe("")
+
+
+    expect(hereDoc(function() {/*
+a
+    */})).toBe("a")
+
+
+    expect(hereDoc(function() {/*
+a b
+cd ef
+    */})).toBe("a b\ncd ef")
+
+
+    expect(hereDoc(function() {/*
+  a b
+  cd ef
+    */})).toBe("a b\ncd ef")
+
+
+    expect(hereDoc(function() {/*
+      a b
+      cd ef
+    */})).toBe("a b\ncd ef")
+
+
+    expect(hereDoc(function() {/*
+      a b
+        cd ef
+    */})).toBe("a b\n  cd ef")
+
+  }))
+})
+
+describe('loader', function() {
   describe('parser', function() {
     it('should accept any kind of whitespace', function() {
 
@@ -81,6 +122,65 @@ describe('loader', function() {
       expect(parse('m1   m3')).toEqual(f.map(t, ['m1', 'm3']))
       expect(parse('m1 \n  m4')).toEqual(f.map(t, ['m1', 'm4']))
       expect(parse('a\n  b\n  c')).toEqual(f.map(t, ['a', 'b', 'c']))
+    })
+    describe('file-level', function() {
+      var sourceParser
+      var hereDoc
+
+      beforeEach(inject(['sourceParser', 'hereDoc', function(a, b) {
+        sourceParser = a
+        hereDoc = b
+      }]))
+      function test (a, b) {
+        expect(sourceParser(hereDoc(a))).toEqual(b)
+      }
+      it('should work on empty', function() {
+        test(function() {/**/}, [])
+        test(function() {/*
+          xxx
+          yyy
+        */}, [])
+      })
+
+      it('should work regardless of placement', function() {
+        test(function() {/*
+          "require a"
+          xxx
+          yyy
+        */}, ['a'])
+        test(function() {/*
+          xxx
+          "require b"
+          yyy
+        */}, ['b'])
+        test(function() {/*
+          xxx
+          yyy
+          "require c"
+        */}, ['c'])
+      })
+
+      it('should work on multiple', function() {
+        test(function() {/*
+          "require aa"
+          "require bbb"
+          xxx
+        */}, ['aa', 'bbb'])
+      })
+      it('should work with bot string notations', function() {
+        test(function() {/*
+          "require cc"
+          'require d'
+          xxx
+        */}, ['cc', 'd'])
+      })
+      it('should not work when malformatted', function() {
+        test(function() {/*
+          "require a'
+          'require b"
+          xxx
+        */}, [])
+      })
     })
   })
 

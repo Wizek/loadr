@@ -14,6 +14,31 @@ di.module('modules', [])
   }
 })
 
+.factory('sourceParser', function() {
+  return function(str) {
+    var list = []
+    // console.log('!!!!!!!!')
+    str.replace(/(["'])require (.*)\1/gi, function(match, $1, $2) {
+      list.push($2)
+    })
+
+    return list
+  }
+})
+
+.factory('hereDoc', function(_) {
+  return function hereDoc(fn) {
+    function removeFnLines (str) {
+      return _(str.split('\n')).chain().initial().rest().value().join('\n')
+    }
+    function normalizeIndentation (str) {
+      var m = str.match(/^(\s*)/)[0]
+      return str.replace(new RegExp('^' + m, 'mg'), '')
+    }
+    return normalizeIndentation(removeFnLines(fn.toString()))
+  }
+})
+
 .factory('transc', function() {
   return function() {
     console.log.apply(console, arguments)
