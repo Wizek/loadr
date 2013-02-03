@@ -26,9 +26,6 @@ f.map = function(fn, list) {
 
 
 var parse = function(str) {
-  var list = str.split(/\s+/)
-  var list2 = f.map(function(v) {return {name:v}}, list)
-  return list2
 }
 
 // var resolve = function(ary) {
@@ -61,11 +58,33 @@ function superset (a, b) {
 beforeEach(module('modules'))
 beforeEach(function() {
   cnt = 0
-  this.addMatchers({
-    toBeSupersetOf: function(subset) {
-      return superset(this.actual, subset)
+  // console.log(111, this)
+  this.addMatchers(
+    { toBeSupersetOf: function(subset) {
+        return superset(this.actual, subset)
+      }
+    , toThenEqual: function(expected) {
+        // console.log(222, /*this*/ jasmine.Matchers.prototype.toEqual)
+        var m = jasmine.Matchers.prototype
+        // console.log(333, this.actual)
+        var val
+        this.actual.then(function(v) {
+          val = v
+        })
+        // console.log(444, val)
+        if (typeof val == 'undefined') {
+          // this.message = "[[ time out ]]"
+          throw Error('promise not fulfilled in time')
+        } else {
+          this.message = function() {
+            // var englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) { return ' ' + s.toLowerCase(); });
+            return 'Expected promised value ' + jasmine.pp(val) + " to equal " + jasmine.pp(expected)
+          }
+          return val == expected
+        }
+      }
     }
-  });
+  )
 })
 
 function injectInto (o, ary) {
@@ -139,32 +158,49 @@ describe('superset', function() {
   })
 })
 
+beforeEach(module(function($provide) {
+  var list = []
+  var onNextTick = function(cb) {
+    // console.log(123123123123)
+    return cb()
+    // console.log(cb)
+    // list.push(cb)
+  }
+  $provide.value('onNextTick', onNextTick)
+  var flushNextTick = function() {
+    console.log(0.25, list.length)
+    while (list.length) {
+      list.pop()()
+    }
+  }
+}))
 describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
 
+
   describe('parser', function() {
+    describe('url-level', function() {
+      it('should accept any kind of whitespace', inject(function(scriptTagSeparator) {
+        function test (a, b) {
+          expect(scriptTagSeparator(a)).toEqual(b)
+        }
+        test('m1 m2',       ['m1', 'm2'])
+        test('m1   m3',     ['m1', 'm3'])
+        test('m1 \n  m4',   ['m1', 'm4'])
+        test('a\n  b\n  c', ['a', 'b', 'c'])
+      }))
+    })
+
     describe('name-level', function() {
       var j = {}
       beforeEach(injectInto(j, ['nameParser']))
       function test (a,b) { expect(j.nameParser(a)).toBeSupersetOf(b) }
       it('', function() {
         test('name', {name: 'name'})
-        test('name', {path: 'sources/name.js'})
+        test('name', {path: 'packages/name.js'})
       })
     })
 
-    describe('url-level', function() {
-      it('should accept any kind of whitespace', function() {
-        // expect(1).toBe(2)
-        var t = function(s) {
-          return {name:s}
-        }
-        expect(parse('m1 m2')).toEqual(f.map(t, ['m1', 'm2']))
-        expect(parse('m1   m3')).toEqual(f.map(t, ['m1', 'm3']))
-        expect(parse('m1 \n  m4')).toEqual(f.map(t, ['m1', 'm4']))
-        expect(parse('a\n  b\n  c')).toEqual(f.map(t, ['a', 'b', 'c']))
-      })
-    })
 
     describe('file-level', function() {
       var sourceParser
@@ -240,21 +276,6 @@ describe('loader', function() {
         }
       $provide.value('dependencyMap', dependencyMap); // override version here
     }))
-    beforeEach(module(function($provide) {
-      var list = []
-      var onNextTick = function(cb) {
-        return cb()
-        // console.log(cb)
-        // list.push(cb)
-      }
-      $provide.value('onNextTick', onNextTick)
-      var flushNextTick = function() {
-        console.log(0.25, list.length)
-        while (list.length) {
-          list.pop()()
-        }
-      }
-    }))
     describe('sync', function() {
       it('should resolve recursively', function() {
 
@@ -304,6 +325,12 @@ describe('loader', function() {
             done(2)
           })
         })
+
+        it('should ', function() {
+          inject(function() {
+
+          })
+        })
       })
       it('should resolve recursively', function() {
         inject(function(resolve, q) {
@@ -342,5 +369,43 @@ describe('loader', function() {
       test('fed',   'fed')
       test('babcg', 'bacg')
     }))
+  })
+
+  describe('readFile', function() {
+    var mockFs
+    var fileContent
+    beforeEach(module(function($provide) {
+      /*\
+       *  This is how one deals with spies!
+       *  Either way is correct.
+      \*/
+      // mockFs = {}
+      // mockFs.readFile = jasmine.createSpy('readFile')
+      // mockFs.readFile.plan = function(name, cb) {
+      //   return cb(null, fileContent)
+      // }
+      // $provide.value('fs', mockFs)
+      mockFs = {}
+      mockFs.readFile = function(name, cb) {
+        return cb(null, fileContent)
+      }
+      spyOn(mockFs, 'readFile').andCallThrough()
+      $provide.value('fs', mockFs)
+    }))
+
+    it('should ', function() {
+      inject(function(readFile) {
+        expect(mockFs.readFile).not.toHaveBeenCalled()
+
+        fileContent = 'xx'
+        expect(readFile('foo')).toThenEqual('xx')
+
+        expect(mockFs.readFile).toHaveBeenCalled()
+        expect(mockFs.readFile.mostRecentCall.args[0]).toBe('foo')
+
+        fileContent = 'sdadasd\nsdasd'
+        expect(readFile('foo')).toThenEqual('sdadasd\nsdasd')
+      })
+    })
   })
 })

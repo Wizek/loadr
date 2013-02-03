@@ -14,11 +14,39 @@ di.module('modules', [])
   }
 })
 
+.factory('readFile', function(fs, q) {
+  return function readFile (path) {
+    var d = q.defer()
+    fs.readFile(path, function(err, val) {
+      if (err) {
+        d.reject(err)
+      } else {
+        d.resolve(val)
+      }
+    })
+    return d.promise
+  }
+})
+
+.factory('scriptTagSeparator', function(_) {
+  return function scriptTagSeparator (str) {
+    var list = str.split(/\s+/)
+    // var list2 = _.map(list, function(v) {
+    //   return {name:v}
+    // })
+    return list
+  }
+})
+
+.factory('fs', function() {
+  return require('fs')
+})
+
 .factory('nameParser', function() {
   return function nameParser (name) {
     var o =
       { name: name
-      , path: 'sources/'+name+'.js'
+      , path: 'packages/'+name+'.js'
       }
     return o
   }
@@ -152,6 +180,7 @@ di.module('modules', [])
 })
 
 .factory('q', function(onNextTick, forEach, isFunction) {
+  // console.log('%%%%%%%%%%%%%', onNextTick)
   return qFactory(onNextTick, function(x) {throw x})
 
   function qFactory(nextTick, exceptionHandler) {
