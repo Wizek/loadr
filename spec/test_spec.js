@@ -3,6 +3,7 @@ var modules = rewquire('../modules')
 var resolve = modules.resolve
 var di = require('ng-di')
 var mocks = require('ng-di/dist/ng-di-mocks')
+var _ = require('underscore')
 
 var temp = mocks.init(jasmine, global)
 var module = temp.module
@@ -65,22 +66,24 @@ beforeEach(function() {
       }
     , toThenEqual: function(expected) {
         // console.log(222, /*this*/ jasmine.Matchers.prototype.toEqual)
-        var m = jasmine.Matchers.prototype
-        // console.log(333, this.actual)
-        var val
+        var matchers = jasmine.Matchers.prototype
+        var value
+        var timedIn = false
         this.actual.then(function(v) {
-          val = v
+          value = v
+          timedIn = true
+          cnt++
         })
-        // console.log(444, val)
-        if (typeof val == 'undefined') {
-          // this.message = "[[ time out ]]"
-          throw Error('promise not fulfilled in time')
+        if (!timedIn) {
+          throw Error('Promise not fulfilled in time')
         } else {
           this.message = function() {
             // var englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) { return ' ' + s.toLowerCase(); });
-            return 'Expected promised value ' + jasmine.pp(val) + " to equal " + jasmine.pp(expected)
+            return 'Expected promised value ' + jasmine.pp(value) + " to equal " + jasmine.pp(expected)
           }
-          return val == expected
+          // this.actual = value
+          var patchedEnv = _.extend({}, this, {actual: value})
+          return matchers.toEqual.call(patchedEnv, expected)
         }
       }
     }
@@ -96,6 +99,8 @@ function injectInto (o, ary) {
   fn.$inject = ary
   return inject(fn)
 }
+var hereDoc = di.injector(['modules']).get('hereDoc')
+
 describe('hereDoc', function() {
   var j = {}
   beforeEach(injectInto(j, ['hereDoc']))
@@ -161,9 +166,7 @@ describe('superset', function() {
 beforeEach(module(function($provide) {
   var list = []
   var onNextTick = function(cb) {
-    // console.log(123123123123)
     return cb()
-    // console.log(cb)
     // list.push(cb)
   }
   $provide.value('onNextTick', onNextTick)
@@ -300,7 +303,7 @@ describe('loader', function() {
       })
     })
     describe('async', function() {
-      beforeEach(module(function($provide) {
+      var dependenciesOfMockModule = module(function($provide) {
         $provide.factory('dependenciesOf', function(q, dependenciesOfSync) {
           return function(name) {
             var d = q.defer()
@@ -308,9 +311,33 @@ describe('loader', function() {
             return d.promise
           }
         })
-      }))
+      })
       describe('dependenciesOf', function() {
+        var mockFs
+        var fileContent
+
+        beforeEach(module(function($provide) {
+          /*\
+           *  This is how one deals with spies!
+           *  Either way is correct.
+          \*/
+          mockFs = {}
+          mockFs.readFile = function(name, cb) {
+            return cb(null, fileContent)
+          }
+          spyOn(mockFs, 'readFile').andCallThrough()
+          $provide.value('fs', mockFs)
+          // mockFs = {}
+          // mockFs.readFile = jasmine.createSpy('readFile')
+          // mockFs.readFile.plan = function(name, cb) {
+          //   return cb(null, fileContent)
+          // }
+          // $provide.value('fs', mockFs)
+        }))
+
         it('should use q and dependencyMap', function() {
+          dependenciesOfMockModule()
+
           inject(function(dependenciesOf) {
             function test (a, b) {
               dependenciesOf(a).then(function(v) {
@@ -326,13 +353,61 @@ describe('loader', function() {
           })
         })
 
-        it('should ', function() {
-          inject(function() {
+        it('should integrate', function() {
+          inject(function(dependenciesOf) {
+            function test (a, b) {
+              fileContent = hereDoc(a)
+              expect(dependenciesOf('x')).toThenEqual(b)
+            }
 
+            test(function(){/*
+            */},  [])
+
+            test(function(){/*
+              "require asd"
+            */}, ['asd'])
+
+            // TODO Consider skipping the 'e' one.
+            test(function(){/*
+              "require a"
+               "require b'
+
+              'require c"
+
+              asd
+
+              "require d"
+              ddd
+
+              var haha = "require e"
+
+                  'require x'
+
+            */}, 'adex'.split(''))
+
+            done(3)
+          })
+        })
+
+        describe('readFile', function() {
+          it('should ', function() {
+            inject(function(readFile) {
+              expect(mockFs.readFile).not.toHaveBeenCalled()
+
+              fileContent = 'xx'
+              expect(readFile('foo')).toThenEqual('xx')
+
+              expect(mockFs.readFile).toHaveBeenCalled()
+              expect(mockFs.readFile.mostRecentCall.args[0]).toBe('foo')
+
+              fileContent = 'sdadasd\nsdasd'
+              expect(readFile('foo')).toThenEqual('sdadasd\nsdasd')
+            })
           })
         })
       })
       it('should resolve recursively', function() {
+        dependenciesOfMockModule()
         inject(function(resolve, q) {
           function test(a, b) {
             resolve(charSplit(a)).then(function(v) {
@@ -371,41 +446,4 @@ describe('loader', function() {
     }))
   })
 
-  describe('readFile', function() {
-    var mockFs
-    var fileContent
-    beforeEach(module(function($provide) {
-      /*\
-       *  This is how one deals with spies!
-       *  Either way is correct.
-      \*/
-      // mockFs = {}
-      // mockFs.readFile = jasmine.createSpy('readFile')
-      // mockFs.readFile.plan = function(name, cb) {
-      //   return cb(null, fileContent)
-      // }
-      // $provide.value('fs', mockFs)
-      mockFs = {}
-      mockFs.readFile = function(name, cb) {
-        return cb(null, fileContent)
-      }
-      spyOn(mockFs, 'readFile').andCallThrough()
-      $provide.value('fs', mockFs)
-    }))
-
-    it('should ', function() {
-      inject(function(readFile) {
-        expect(mockFs.readFile).not.toHaveBeenCalled()
-
-        fileContent = 'xx'
-        expect(readFile('foo')).toThenEqual('xx')
-
-        expect(mockFs.readFile).toHaveBeenCalled()
-        expect(mockFs.readFile.mostRecentCall.args[0]).toBe('foo')
-
-        fileContent = 'sdadasd\nsdasd'
-        expect(readFile('foo')).toThenEqual('sdadasd\nsdasd')
-      })
-    })
-  })
 })

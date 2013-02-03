@@ -120,13 +120,14 @@ di.module('modules', [])
   return {}
 })
 
-.factory('dependenciesOf', function(q, dependencyMap) {
-  throw Error('unimplemented')
-  // return function(name) {
-  //   var d = q.defer()
-  //   d.resolve(dependencyMap[name])
-  //   return d.promise
-  // }
+.factory('dependenciesOf', function(q, readFile, sourceParser) {
+  return function(name) {
+    var d = q.defer()
+    readFile()
+      .then(sourceParser, d.reject)
+      .then(d.resolve, d.reject)
+    return d.promise
+  }
 })
 .factory('dependenciesOfSync', function(dependencyMap) {
   return function(name) {
