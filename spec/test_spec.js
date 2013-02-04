@@ -287,6 +287,7 @@ describe('loader', function() {
       describe('dependenciesOf', function() {
         var mockFs
         var fileContent
+        var fileError
         var ifFunction = get('ifFunction')
         beforeEach(module(function($provide) {
           /*\
@@ -296,7 +297,7 @@ describe('loader', function() {
           mockFs = {}
           mockFs.readFile = function(name, cb1, cb2) {
             var cb = ifFunction(cb2).else(cb1)
-            return cb(null, fileContent)
+            return cb(fileError, fileContent)
           }
           spyOn(mockFs, 'readFile').andCallThrough()
           $provide.value('fs', mockFs)
@@ -355,20 +356,35 @@ describe('loader', function() {
         })
 
         describe('readFile', function() {
-          it('should ', function() {
-            inject(function(readFile) {
-              expect(mockFs.readFile).not.toHaveBeenCalled()
+          it('should fulfill with the file content', inject(function(readFile) {
+            expect(mockFs.readFile).not.toHaveBeenCalled()
 
-              fileContent = 'xx'
-              expect(readFile('foo')).toThenEqual('xx')
+            fileContent = 'xx'
+            expect(readFile('foo')).toThenEqual('xx')
 
-              expect(mockFs.readFile).toHaveBeenCalled()
-              expect(mockFs.readFile.mostRecentCall.args[0]).toBe('foo')
+            expect(mockFs.readFile).toHaveBeenCalled()
+            expect(mockFs.readFile.mostRecentCall.args[0]).toBe('foo')
 
-              fileContent = 'sdadasd\nsdasd'
-              expect(readFile('foo')).toThenEqual('sdadasd\nsdasd')
-            })
-          })
+            fileContent = 'sdadasd\nsdasd'
+            expect(readFile('foo')).toThenEqual('sdadasd\nsdasd')
+          }))
+
+          it('should reject with the error', inject(function(readFile) {
+            function test (a, b) {
+              fileError = a
+              readFile('whatever').then(function() {
+                throw Error('should reject')
+              }, function(v) {
+                expect(v).toBe(b)
+                cnt++
+              })
+            }
+            test('err' , 'err')
+            test('err2', 'err2')
+            expect(test.bind(this, true, true)).not.toThrow()
+            expect(test.bind(this, null, 'x')).toThrow()
+            done(3)
+          }))
         })
       })
       it('should resolve recursively', function() {

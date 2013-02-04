@@ -38,7 +38,7 @@ app.configure('development', function(){
 })
 
 function out (res, msg) {
-  console.log(msg)
+  // console.log(msg)
   // res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
   // res.write('<li><pre>'+require('util').inspect(msg)+'</pre></li>')
   return msg
@@ -48,6 +48,7 @@ function out (res, msg) {
 app.get('/load', function(req, res) {
   res.set('content-type', 'text/javascript')
   var packages = scriptTagSeparator(req.query.packages)
+
   var c = out.bind(this, res)
   
 
@@ -67,6 +68,8 @@ app.get('/load', function(req, res) {
       c(v)
       res.send(v)
       // res.end('\n\nend</ul>')
+    }, function(err) {
+      res.send(404, err)
     })
 })
 
