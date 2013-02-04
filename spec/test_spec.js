@@ -1,7 +1,10 @@
-var di = require('ng-di')
+global.di = require('ng-di')
+require("fs").readdirSync("./lib").forEach(function(file) {
+  require("../lib/" + file)
+})
+
 var _moduleBkp = module
 require('ng-di/dist/ng-di-mocks')
-require('../lib/modules')
 
 
 var module = di.mock.module
