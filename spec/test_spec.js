@@ -24,13 +24,17 @@ var injectInto = function(o, ary) {
 var get = di.injector(['modules']).get
 var superset = get('superset')
 var hereDoc = get('hereDoc')
+var noop = get('noop')
 
 
 beforeEach(module('modules'))
 
 // Suppress logfactory
 beforeEach(module(function($provide) {
-  $provide.value('logFactory_whiteList', /$^/)
+  // $provide.value('logFactory_whiteList', /$^/)
+  $provide.value('logFactory', function() {
+    return {log:noop,warn:noop}
+  })
 }))
 
 // Reset "async" callback count
@@ -168,14 +172,29 @@ describe('loader', function() {
         test(' ',           [])
         test('  ',          [])
         test(' m1 m2',      ['m1', 'm2'])
+
+        test(' ./x /asd',      ['./x', '/asd'])
       }))
     })
 
     describe('name-level', function() {
-      function test (a,b) { expect(get('nameParser')(a)).toBeSupersetOf(b) }
-      it('', function() {
+      var inameParser
+      beforeEach(inject(function(nameParser) {
+        inameParser = nameParser
+      }))
+      it('should work with global packages', function() {
+        function test (a,b) { expect(inameParser(a)).toBeSupersetOf(b) }
         test('name', {name: 'name'})
         test('name', {path: 'packages/name.js'})
+      })
+      function test (a,b1,b2) {
+        expect(inameParser(a)).toBeSupersetOf({name:b1, path:b2})
+      }
+      xit('should (?) support absolute paths', function() {})
+      xit('should (?) support wildcards', function() {})
+      it('should support directories', function() {
+        expect(inameParser('path')).not.toBeSupersetOf({isDirectory:true})
+        expect(inameParser('path/'))   .toBeSupersetOf({isDirectory:true})
       })
     })
 
@@ -302,7 +321,11 @@ describe('loader', function() {
             var cb = ifFunction(cb2).else(cb1)
             return cb(fileError, fileContent)
           }
+          mockFs.readdir = function(path, cb) {
+            return cb(fileError, mockFs.readdir.result)
+          }
           spyOn(mockFs, 'readFile').andCallThrough()
+          spyOn(mockFs, 'readdir').andCallThrough()
           $provide.value('fs', mockFs)
           // mockFs = {}
           // mockFs.readFile = jasmine.createSpy('readFile')
@@ -327,6 +350,25 @@ describe('loader', function() {
             test('a', ['b'])
             test('g', ['a', 'c'])
             done(2)
+          })
+        })
+
+        it('should support directories', function() {
+          // dependenciesOfMockModule()
+          module(function($provide) {
+            $provide.value('nameParser', function(val) {
+              return {isDirectory: true, path:val, name:val}
+            })
+          })
+          inject(function(dependenciesOf) {
+            function test (a, b) {
+              expect(dependenciesOf(a)).toThenEqual(b)
+            }
+            mockFs.readdir.result = ['x.js', 'yy.js']
+            expect(mockFs.readdir).not.toHaveBeenCalled()
+            test('test/', ['test/x', 'test/yy'])
+            expect(mockFs.readdir).toHaveBeenCalled()
+            done(1)
           })
         })
 
@@ -409,6 +451,22 @@ describe('loader', function() {
           test('d',  'fed')
           test('g',  'babcg')
           done(9)
+        })
+      })
+      describe('dependency-tree', function() {
+        beforeEach(dependenciesOfMockModule)
+
+        it('should return a tree', function() {
+          inject(function(dependencyTreeOf) {
+            function test (a, b) {
+              expect(dependencyTreeOf(a)).toThenEqual(b)
+            }
+            test([], [])
+            test(['b'], [{name:'b',deps:[]}])
+            test(['b','b'], [{name:'b',deps:[]},{name:'b',deps:[]}])
+            test(['a'], [{name:'a',deps:[{name:'b',deps:[]}]}])
+            // done(2)
+          })
         })
       })
     })
