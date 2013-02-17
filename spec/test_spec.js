@@ -128,7 +128,6 @@ describe('hereDoc', function() {
   })
 })
 
-
 describe('superset', function() {
   it('should ', function() {
     expect(superset({}, {})).toBeTruthy()
@@ -151,6 +150,31 @@ describe('onNextTick', function() {
   it('should exist', function() {
     inject(function(onNextTick) {
       expect(onNextTick).toBeDefined()
+    })
+  })
+})
+
+describe('walkTreeFactory', function() {
+  it('should ', function() {
+    inject(function(walkTreeFactory) {
+      function test (a,b,c) {
+        expect(walkTreeFactory(b)(a)).toEqual(c)
+      }
+      // var noop =
+      test([], noop, [])
+      test([{a:[]}], function(){return 2}, [2])
+      test([{a:[]},{a:[]}], function(){return 2}, [2,2])
+      test([{a:[]}], function(v){return Object.keys(v)[0]}, ['a'])
+      test
+        ( [{k:'a',v:[{k:'b',v:[]}]}]
+        , function(v, cb){return [cb(v.v), v.k]}, [[[[[]
+        , 'b']], 'a']]
+        )
+      test
+        ( [{k:'a',v:[{k:'b',v:[]}]}]
+        , function(v, cb){var o={};o[v.k]=cb(v.v);return o}
+        , [{a:[{b:[]}]}]
+        )
     })
   })
 })
@@ -293,6 +317,32 @@ describe('loader', function() {
           // t = ['a']
           // t = [{name: 'a', requires: ['b']}]
           // t = [{name: 'a', requires: [{name:'b', requires:[]}]}]
+        })
+      })
+      describe('dTreeToHumanReadable', function() {
+        it('should ', function() {
+          inject(function(dTreeToHumanReadable) {
+            function test (a,b) {
+              expect(dTreeToHumanReadable(a)).toEqual(b)
+            }
+            test([], [])
+            test([{name:'x',deps:[]}], [{x:[]}])
+            test([{name:'x',deps:[]},{name:'y',deps:[]}], [{x:[]},{y:[]}])
+            test([{name:'x',deps:[{name:'y',deps:[]}]}], [{x:[{y:[]}]}])
+          })
+        })
+      })
+      describe('dTreeToReducedList', function() {
+        it('should ', function() {
+          inject(function(dTreeToReducedList) {
+            function test (a,b) {
+              expect(dTreeToReducedList(a)).toEqual(b)
+            }
+            test([], [])
+            test([{name:'x',deps:[]}], ['x'])
+            test([{name:'x',deps:[]},{name:'y',deps:[]}], ['x', 'y'])
+            test([{name:'x',deps:[{name:'y',deps:[]}]}], ['y', 'x'])
+          })
         })
       })
     })
