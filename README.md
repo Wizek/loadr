@@ -1,4 +1,11 @@
-strutúra
+
+# js.loader (working prototype)
+
+## Introduction
+
+### Problem
+
+Client side JavaScript suffers from a big problem nowadays. We cannot properly build on top of others' work.
 
 - bevezetés
   - probléma
@@ -8,6 +15,7 @@ strutúra
 - Jelen felhasználhatóság
   - JSFIDDLE PRÓBÁLD KI ONLINE INGYENESEN MOST
   - user guide
+- [TOC][TOC]
 - jövő
   - todo features
   - kérdéses featurek
@@ -20,3 +28,5 @@ strutúra
         - egyéb?
         - mind?
 - licensz
+
+[TOC]: #TOC
