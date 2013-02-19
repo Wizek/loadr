@@ -1,0 +1,22 @@
+strutúra
+
+- bevezetés
+  - probléma
+    - ** előnyök jelenlegi megoldásokhoz képest
+  - megoldás
+    - vizió
+- Jelen felhasználhatóság
+  - JSFIDDLE PRÓBÁLD KI ONLINE INGYENESEN MOST
+  - user guide
+- jövő
+  - todo features
+  - kérdéses featurek
+    - linkek issuekra ahol meg lehet vitatni
+    - lista:
+      - Milyen forrásokból dolgozzunk?
+        - github?
+        - lokális?
+        - npm?
+        - egyéb?
+        - mind?
+- licensz
