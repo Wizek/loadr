@@ -1,7 +1,6 @@
-
 # loadr
 
-Handling all your JS dependencies.
+Handling all your JS dependencies -- and a little more.
 
 ### Introduction
 
@@ -13,14 +12,17 @@ I expect discussion from the community. Is there anything I missed? Do you have 
 
 ### Current solutions and their weeknesses
 
-- RequireJS: many load-parse cycles makes it slow for even development
-- bower: too simplistic, you still have to include everything manually via `<script>`
+- RequireJS: many load-parse cycles makes it slow even for development
+- bower: too simplistic, you still have to include everything manually via lots of script tags
 
 ### Quick start guide
 
-There are two main usecases. CDN and local installation.
+There are two main use-cases. [CDN-style](#CDN) and [local installation](#local).
 
-#### CND
+ - If you want to kick-start a project or an experiment (either locally or in a jsfiddle, [plncr][demo], etc), use the [CDN-style](#CDN)
+ - If you want to use loadr in a production environment or without internet access, use the [local version](#local)
+
+#### CDN
 
 Try it out [over here][demo].
 
@@ -29,6 +31,8 @@ Try it out [over here][demo].
       underscore
     "></script>
 
+It's a regular HTML script tag. The magic is in the path: `http://load.aws.af.cm/load?packages=`
+
 #### Local
 
     git clone git://github.com/wizek/loadr.git
@@ -36,7 +40,7 @@ Try it out [over here][demo].
     npm install
     PORT=3333 node .
 
-And you have your very own loadr. Whatever *.js you place into ./packages will be accessable through loadr.
+And you have your very own local loadr. Place .js files into `./packages` and they will be accessable through loadr.
 
 ### Open questions:
 
