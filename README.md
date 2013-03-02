@@ -4,7 +4,7 @@ Handling all your JS dependencies -- and a little more.
 
 ### Try it out *[over here!][demo]*
 
-### Vision
+## Vision
 
 As the saying goes, this is only the tip of the iceberg.
 That is, the stuff that already works and is written about in the [quick start guide][quickStartGuide].
@@ -13,12 +13,16 @@ There are a lot of features and extensions to be added in the near future. And t
 **Imagine this:** You have a great idea, and want to jump into experimenting with it as soon as possible.
 You know you'll need some sort of sortable or drag'n'drop functionality.
 You go to loadr's discovery site where you input "sortable drag and drop".
-Results return quickly ordered based on a sophisticated relevance score -- which takes into account among others the popularity, the maintained-ness, the the alternative-graph of the results.
+Results return quickly ordered based on a sophisticated relevance score
+-- which takes into account among others the popularity, the maintained-ness, the the alternative-graph of the results.
 
 You click the first one.
-In the alternative list (much like at [alternativeto.net](http://alternativeto.net)) there is a `jquery-ui/sortable` which might be considered a little outdated at this point (because all the modern libs are now properly componentialized and don't depend on monolithic libraries such as jQuery) but at least you are familiar with it's API.
+In the alternative list (like at [alternativeto.net](http://alternativeto.net)) there is a `jquery-ui/sortable`.
+It might be considered a little outdated at this point
+*(because all the modern libs are now properly componentialized and don't depend on monolithic libraries such as jQuery)*
+but at least you are familiar with it's API.
 Yay for backwards compatibility!
-(Yes, if it works with a script tag, it works with loadr as well. Out of the box.)
+*(Yes, if it works with a script tag, it works with loadr as well. Out of the box.)*
 
 Armed with the new knowledge, you create `idea.html` with
 
@@ -35,7 +39,7 @@ And it might just be the humble begining of your most awesome project so far.
 
 
 
-### Introduction
+## Introduction
 
 Client side JavaScript suffers from a big problem nowadays.
 We cannot properly build on top of each others' work.
@@ -46,7 +50,10 @@ Let me propose a solution which I feel has the potential to be the best one so f
 Let alone propose, you can try out a (working prototype) version right now [over here][demo] if you are adventurous!
 Read the [quick start guide][quickStartGuide] to get up to speed quickly.
 
-I expect discussion from the community. Is there anything I missed? Do you have some answers to one of my [open questions][openQuestions]? [I'd love to hear from you][contact].
+I expect discussion from the community.
+Is there anything I missed?
+Do you have some answers to one of my [open questions][openQuestions]?
+[I'd love to hear from you][contact].
 
 
 
@@ -54,8 +61,10 @@ I expect discussion from the community. Is there anything I missed? Do you have 
 
 There are two main use-cases:
 
- - If you want to **kick-start a project** or an experiment (either locally or in a jsfiddle, [plncr][demo], etc), use the [CDN-style][cdn-style]
- - If you want to use loadr in a **production environment** or you sometimes do development offline, use the [local version](#local)
+- If you want to **kick-start a project** or an experiment
+  (either locally or in a jsfiddle, [plncr][demo], etc), use the [CDN-style][cdn-style]
+- If you want to use loadr in a **production environment** or
+  you sometimes do development offline, use the [local version](#local)
 
 
 
@@ -131,32 +140,32 @@ Either:
     "require folder/bar";
     "require folder/baz";
 
-Or more consicely:
+Or more concisely:
 
     "require folder/";
 
 
 
 
-### Open questions:
+## Open questions:
 
-Discuss these in our [mailing list][mailingList].
+Come and discuss these in our [mailing list][mailingList]. You are warm heartedly welcome there.
 
 - Which possible js sources should we support? Why, how? Which one should be the default? Some ideas:
+  - local (currently implemented)
+  - local, relative path
   - url
   - git
   - github
   - bower
   - component
   - npm
-  - local (currently implemented)
-  - local, relative path
 - Do you have an idea for a logo? :)
 
 
 
 
-### What makes loadr different from...
+## What makes loadr different from...
 
 - **RequireJS/AMD**: Many load-parse cycles makes this approach slow even for development. Wasting vast amounts of time waiting for network is no fun.
 
@@ -164,15 +173,21 @@ Discuss these in our [mailing list][mailingList].
 
 - **component**: This one is pretty close, but let's see: no per-project build step required.
 
-  You just set up the local version to be a daemon/service and you can forget all about it. No more `cd project; watch make &` every time you resume work. That rings a bell, doesn't it? :)
+  You just set up the local version to be a daemon/service and you can forget all about it.
+  No more `cd project; watch make &` every time you resume work.
+  That rings a bell, doesn't it? :)
 
-  Even better: to use loadr [CDN style][cdn-style] you don't even have to install or run anything, just include the single "magical" script tag and you are all set!
+  Even better:
+  to use loadr [CDN style][cdn-style] you don't even have to install or run anything,
+  just include the single "magical" script tag and you are all set!
 
 
 
 
 
+## License
 
+MIT
 
 
 
