@@ -1,6 +1,6 @@
 # loadr
 
-Handling all your JS dependencies -- and a little more.
+Handling all your JS dependencies for kick-starting your projects — and a *little* more.
 
 
 
@@ -16,19 +16,21 @@ Handling all your JS dependencies -- and a little more.
 
 As the saying goes, this is only the tip of the iceberg.
 That is, the stuff that already works and is written about in the [quick start guide][quickStartGuide] is just the beginning.
-There are a lot of features and extensions to be added in the near future. And their order and details depend greatly on your [early feedback][contact].
+There are a lot of features to be added in the near future.
+Their order and details depend greatly on your [early][openQuestions] [feedback][contact].
 
 **Imagine this:** You have a great idea, and want to jump into experimenting with it as soon as possible.
 You know you'll need some sort of sortable or drag'n'drop functionality.
 You go to loadr's discovery site where you input "sortable drag and drop".
 Results return quickly ordered based on a sophisticated relevance score
--- which takes into account among others the popularity, the maintained-ness, the the alternative-graph of the results.
+— which takes into account among others the features, the popularity, the "maintained-ness", the the alternative-graph of the results.
 
 You click the first one.
 In the alternative list *(like at [alternativeto.net](http://alternativeto.net))* there is `jquery-ui/sortable`.
 It might be considered a little outdated at this point
 *(because all the modern libs are now properly componentialized and don't depend on monolithic libraries such as jQuery)*
 but at least you are familiar with it's API.
+
 Yay for backwards compatibility!
 *(Yes, if it works with a script tag, it works with loadr as well. Out of the box.)*
 
@@ -43,7 +45,7 @@ Armed with the new knowledge, you create `idea.html` with
 
     <script> /* Here starts everything */ </script>
 
-And it might just be the humble begining of your most awesome project so far.
+And it might just be the humble beginning of your most awesome project so far.
 
 
 
@@ -55,11 +57,10 @@ Client side JavaScript suffers from a big problem nowadays.
 We cannot properly build on top of each others' work.
 I blame it on the lack of an include feature built into JS;
 the only native one we have is through html script tag
-which didn't scale properly on it's own -- up until now!
+which didn't scale properly on it's own — up until now!
 
-Let me propose a solution which I feel has the potential to be the best one so far.
-Let alone propose, you can try out a (working prototype) version right now
-[over here][demo] if you are adventurous!
+Let me propose a solution which I feel has the potential to be the best one so far. Let alone propose, you can try out a (working prototype) version right now [over here][demo] if you are adventurous!
+
 Read the [quick start guide][quickStartGuide] to get up to speed quickly.
 
 I expect discussion from the community.
@@ -76,7 +77,7 @@ Do you have some answers to one of my [open questions][openQuestions]?
 There are two main use-cases:
 
 - If you want to **kick-start a project** or **start an experiment quickly**
-  (either locally or in a jsfiddle, [plncr][demo], etc), use the [CDN-style][cdn-style]
+  (either locally or in a jsfiddle, [plnkr][demo], etc), use the [CDN-style][cdn-style]
 - If you want to use loadr in a **production environment** or
   you need the ability to **develop offline**, use the [local version](#local-install)
 
@@ -87,7 +88,7 @@ There are two main use-cases:
 
 #### CDN
 
-**Try it out online *[over here][demo]***.
+**Try it out online [*over here*][demo]**.
 
     <script src="http://loadr.aws.af.cm/load?packages=
       angular
@@ -128,11 +129,35 @@ Some examples of valid uses:
 Personally I prefer the second one for short lists and
 the fourth one for longer lists. But it's your choice.
 
+Current list of available scripts from the cdn for the sake of this prototype:
+
+- angular
+- angular-ui
+- backbone
+- c
+- f1
+- f2
+- ifPattern
+- jquery
+- jquery-ui
+- moment
+- ticker
+- underscore
+
+*Note:*
+This list will be greatly extended once we figure out the
+[open question about the default source-registry][openQuestions].
+The domain or path may also change once a conclusion is reached.
+If there is a lib you'd like to add to the current CDN to maximize
+your experimenting experience, [get in touch][contact].
+
 
 
 
 
 #### Local install
+
+You'll need: git, npm and nodejs.
 
     git clone git://github.com/wizek/loadr.git
     cd loadr
@@ -141,13 +166,15 @@ the fourth one for longer lists. But it's your choice.
 
 And you have your very own local loadr. Place .js files into `./packages` and they will be accessible through loadr. Folders and symlinks are OK too.
 
-You can specify dependencies placed in there for scripts very similar to how you would `"use strict";`:
+*Tip:* I use symlinks to point `./packages/projectName/` to `/path/to/projetName/src/js/` so I can use loadr to manage project-specific dependencies as well.
+
+You can specify dependencies placed in there for scripts very similar to how you would `"use strict";`
 
     "require path/to/my/dependency";
 
 *Note:* the semicolon at the end is optional and is used now to visually emphasize the above as being a statement
 
-*Note:* The path is relative to `loadr/packages`
+*Note:* The path is relative to `./packages` folder within your cloned loadr folder.
 
 
 Let's suppose you place `foo.js`, `folder/bar.js` and `folder/baz.js` into `./packages`.
@@ -160,7 +187,7 @@ You can reqire them like this:
 
 How would you make `foo` dependent on `bar` and `baz`?
 
-Either:
+Prepend `foo.js` with either:
 
     "require folder/bar";
     "require folder/baz";
@@ -169,16 +196,28 @@ Or more concisely:
 
     "require folder/";
 
+Once you have loadr running locally and some scripts in `./packages`, you can use them like you would the [CDN][cdn-style] *(read it to understand what to do next)*, just with the different domain and port:
+
+    <script src="http://localhost:3333/load?packages=
+      foo
+      folder/
+    "></script>
 
 
 
 
-## Open questions:
+
+## Open questions
+
+I'd love to have some participation of the community to help decide with these
+questions and shape loadr to become most of what it can.
+Loadr will be the most successful if there is an awesome and supportive community behind it, who consist of people sharing our [long term goals](#the-future), [vision](#vison), and passion. :)
 
 Come and discuss these in our [mailing list][mailingList].
 You are warm heartedly welcome there.
 
-- Which possible js sources should we support?
+
+- Which possible js source registries should we support?
   Why, how? Which one should be the default? Some ideas:
 
         local (currently implemented)
@@ -189,6 +228,7 @@ You are warm heartedly welcome there.
         bower
         component
         something else?
+
 
 - What should be the syntax of requiring modules?
   (Some yet-to-be-implemented) examples:
@@ -203,26 +243,45 @@ You are warm heartedly welcome there.
         "require http://example.com/path/to/file.js";
         something else?
 
-- Do you have an idea for a logo? :)
 
+- How should we address caching?
+  This question is two-fold:
+
+    - In the case of the CDN caching by the browsers.
+    - In the case of an external source (such as a git url) caching by loadr itself so that it doesn't do excess networking.
+
+
+- Do you have an idea for a loadr logo? :)
+
+
+- If we decide to support npm packages, how are we going to do it?
+  What will we do with those that require node-specific api (like fs)?
+
+- Would loadr make sense for CSS? How?
+  If so, should we include support for Stylus, Less, Sass, etc? How do you imagine we do that?
+
+- Would loadr make sense for HTML templates? How?
+  Some libs will need them (think datepicker) and it is quite inconvinient to write them fullin in js.
+
+- How could we ease debugging? Source maps?
 
 
 
 
 ## What makes loadr different from...
 
-
-- **bower**: Too simplistic.
-  You still have to include everything manually via lots of script tags or fall back to AMD.
+- **bower**:
+  You still have to include everything manually via lots of script tags or fall back to AMD. Therefore doesn't encourage much needed componentialization of libraries.
 
 - **RequireJS and other AMD**:
   Many load-parse cycles makes this approach slow even for development.
+
   Wasting vast amounts of time waiting for network is no fun.
 
 - **component**: This one is pretty close, but let's see:
 
   You just set up a local loadr to be a daemon/service and you can forget all about it.
-  No more `cd project; watch make &` every time you resume work.
+  No more `cd project; watch make &` every time you resume work in one of your projects.
   That rings a bell, doesn't it? :)
 
   Even better:
@@ -240,7 +299,7 @@ There are a number of features we can have further along the line:
 
 - Online platform to register and manage your published libs.
 
-  Might not be needed if we opt for github, bower or component as mentioned in the [open questions][openQuestions] section.
+  Might not be needed if we opt for github, bower or component for registry as mentioned in the [open questions][openQuestions] section.
 
 
 - Discovery platform for loadr libs.
@@ -253,13 +312,32 @@ There are a number of features we can have further along the line:
   Something similar to what is mentioned in [this talk](http://www.youtube.com/watch?v=mGENRKrdoGY).
 
 
+- Semantic version handling.
+
+  Something like what is described in [this npm doc](https://npmjs.org/doc/json.html#dependencies).
+
+
+- Progress bar.
+
+  If you specify an external source for loadr,
+  you will be presented with a progress bar and
+  the page will auto-refresh once complete.
+  This featuer will ensure that you won't have to use a command line interface to use loadr, everything is taken care of for you, right when you need it.
+
+
+- Universal packages.
+
+  Something like `"require npm://underscore"` for those that would work in the browser too.
+
+
+
 
 
 ## Contact
 
 For ([open][openQuestions]?) questions and general discussion you are most welcome to our [Google Group][mailingList].
 
-Issues should be reported [here](https://github.com/Wizek/loadr/issues).
+Bugs and issues should be reported [here](https://github.com/Wizek/loadr/issues).
 
 
 
