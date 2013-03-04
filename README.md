@@ -187,7 +187,7 @@ JSONP compatible to avoid cross domain restrictions.
 
 You'll need: git, npm and nodejs.
 
-    git clone git://github.com/wizek/loadr.git
+    git clone https://github.com/Wizek/loadr.git
     cd loadr
     npm install
     PORT=3333 node .
@@ -201,6 +201,10 @@ And you have your very own local loadr. Place .js files into `./packages` and th
 You can specify dependencies placed in there for scripts very similar to how you would `"use strict";`
 
     "require path/to/my/dependency";
+
+    void function ($) {
+      /* Such code comes here that depend on `path/to/my/dependency` */
+    }(dependency)
 
 *Note:* the semicolon at the end is optional and is used now to visually emphasize the above as being a statement
 
