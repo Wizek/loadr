@@ -14,11 +14,6 @@ Handling all your JS dependencies for kick-starting your projects — and a *lit
 
 ## Vision
 
-As the saying goes, this is only the tip of the iceberg.
-That is, the stuff that already works and is written about in the [quick start guide][quickStartGuide] is just the beginning.
-There are a lot of features to be added in the near future.
-Their order and details depend greatly on your [early][openQuestions] [feedback][contact].
-
 **Imagine this:** You have a great idea, and want to jump into experimenting with it as soon as possible.
 You know you'll need some sort of sortable or drag'n'drop functionality.
 You go to loadr's discovery site where you input "sortable drag and drop".
@@ -59,7 +54,9 @@ I blame it on the lack of an include feature built into JS;
 the only native one we have is through html script tag
 which didn't scale properly on it's own — up until now!
 
-Let me propose a solution which I feel has the potential to be the best one so far. Let alone propose, you can try out a (working prototype) version right now [over here][demo] if you are adventurous!
+Let me propose a solution which I feel has the potential to be the best one so
+far. Let alone propose, you can try out a (working prototype) version right now
+[over here][demo] if you feel adventurous!
 
 Read the [quick start guide][quickStartGuide] to get up to speed quickly.
 
@@ -81,6 +78,12 @@ There are two main use-cases:
 - If you want to use loadr in a **production environment** or
   you need the ability to **develop offline**, use the [local version](#local-install)
 
+As the saying goes, this is only the tip of the iceberg. That is, the stuff that
+already works and is written about in this the quick start guide is just the
+beginning. Read the [The Vision][vision] or [The Future][future] to get a
+glimpse. There are a lot of features to be added in the near future. Their
+order and details depend greatly on your [early][openQuestions]
+[feedback][contact].
 
 
 
@@ -368,6 +371,7 @@ For ([open][openQuestions]?) questions and general discussion you are most welco
 
 Bugs and issues should be reported [here](https://github.com/Wizek/loadr/issues).
 
+You can also reach me through direct email if you so desire: <123.wizek+loadr@gmail.com>
 
 
 
@@ -376,7 +380,7 @@ Bugs and issues should be reported [here](https://github.com/Wizek/loadr/issues)
 
 (The MIT License)
 
-Copyright (c) 2013 Milán Nagy <123.wizek@gmail.com>
+Copyright (c) 2013 Milán Nagy <123.wizek+loadr@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
@@ -390,6 +394,8 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 [TOC]: #toc
 [demo]: http://plnkr.co/edit/WYRqk7T928iuCp3RYWvw?p=preview
 [contact]: #contact
+[vision]: #vision
+[future]: #the-future
 [openQuestions]: #open-questions
 [quickStartGuide]: #quick-start-guide
 [mailingList]: http://groups.google.com/group/loadr
