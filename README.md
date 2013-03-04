@@ -151,6 +151,31 @@ The domain or path may also change once a conclusion is reached.
 If there is a lib you'd like to add to the current CDN to maximize
 your experimenting experience, [get in touch][contact].
 
+In addition, you can ask loadr to tell you the full dependency tree of given
+packages simply by changing `/load?` to `/deps?` in the path like so :
+
+    http://loadr.aws.af.cm/deps?packages=backbone, jquery
+
+This yields:
+
+    [
+      {
+        "backbone": [
+          {
+            "underscore": []
+          }
+        ]
+      },
+      {
+        "jquery": []
+      }
+    ]
+
+Note: This is an experimental feature which I found useful for debugging.
+
+Would you like to use this output programmatically on the client side? [Reach
+out to us][contact] and/or submit a pull request  as it could easily be made
+JSONP compatible to avoid cross domain restrictions.
 
 
 
