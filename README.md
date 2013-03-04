@@ -248,8 +248,10 @@ to use loadr once you have your local version set up.
 ## Open questions
 
 I'd love to have some participation of the community to help decide with these
-questions and shape loadr to become most of what it can.
-Loadr will be the most successful if there is an awesome and supportive community behind it, who consist of people sharing our [long term goals](#the-future), [vision](#vison), and passion. :)
+questions and shape loadr to become most of what it can. Loadr will be the most
+successful if there is an awesome and supportive community behind it, who
+consist of people sharing our [long term goals](#the-future), [vision][vision],
+and passion. :)
 
 Come and discuss these in our [mailing list][mailingList].
 You are warm heartedly welcome there.
