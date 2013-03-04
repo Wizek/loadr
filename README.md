@@ -202,6 +202,10 @@ You can specify dependencies placed in there for scripts very similar to how you
 
     "require path/to/my/dependency";
 
+    void function ($) {
+      /* Such code comes here that depend on `path/to/my/dependency` */
+    }(dependency)
+
 *Note:* the semicolon at the end is optional and is used now to visually emphasize the above as being a statement
 
 *Note:* The path is relative to `./packages` folder within your cloned loadr folder.
