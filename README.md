@@ -196,12 +196,16 @@ Or more concisely:
 
     "require folder/";
 
-Once you have loadr running locally and some scripts in `./packages`, you can use them like you would the [CDN][cdn-style] *(read it to understand what to do next)*, just with the different domain and port:
+Once you have loadr running locally and some scripts in `./packages`, you can
+use them like you would the cdn way, just with the different domain and port:
 
     <script src="http://localhost:3333/load?packages=
       foo
       folder/
     "></script>
+
+*Note:* [lean more about the CDN-style][cdn-style] for more information on how
+to use loadr once you have your local version set up.
 
 
 
