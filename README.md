@@ -192,6 +192,8 @@ You'll need: git, npm and nodejs.
     npm install
     PORT=3333 node .
 
+You can also run the tests by running `jasmine-node spec/`.
+
 And you have your very own local loadr. Place .js files into `./packages` and they will be accessible through loadr. Folders and symlinks are OK too.
 
 *Tip:* I use symlinks to point `./packages/projectName/` to `/path/to/projetName/src/js/` so I can use loadr to manage project-specific dependencies as well.
