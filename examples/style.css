@@ -1,0 +1,26 @@
+body {
+  font: 12pt Helvetica
+}
+iframe {
+  width:100%; height:205px
+}
+script, code, pre {
+  font: 11pt monospace;
+  background:#BDE5F8;
+  border-radius:2px;
+  padding:2px
+}
+script[src] {
+  display:block
+}
+script[src]::before {
+  content: '<script src="' attr(src) '"></script>';
+  white-space: pre;
+}
+script[src]::after {
+  font-size: 8pt;
+  /*color: gray; */
+  opacity: 0.5;
+  content: '(Note: external script tags are displayed for your understanding pleasures -- using some clever CSS trickery)';
+  display: block;
+}

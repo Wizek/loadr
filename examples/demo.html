@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="utf-8">
+  <title>loadr interactive demo</title>
+  <script>
+    function isLoaded(name) {
+      var str = window[name]
+        ? "<code>" + name + "</code> is loaded!"
+        : "<code>" + name + "</code> is not loaded at this point"
+      document.write("<li>"+str+"</li>")
+    }
+  </script>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+
+<h1><a href="http://github.com/wizek/loadr">loadr</a> interactive demo</h1>
+<p>Look, we don't have anything loaded yet:</p>
+<ul>
+  <script>
+    isLoaded("jQuery")
+    isLoaded("angular")
+    isLoaded("_")
+  </script>
+</ul>
+
+<p>Let's load some scripts.</p>
+<script src="http://loadr.aws.af.cm/load?packages=
+  angular
+  underscore
+"></script>
+<!-- <p class="hint"></p> -->
+
+<p>Look again, they are loaded alongside with their dependencies!</p>
+<ul>
+  <script>
+    isLoaded("jQuery")
+    isLoaded("angular")
+    isLoaded("_")
+  </script>
+</ul>
+
+<p>And it all happened in a single script tag. Wasn't that awesomely easy?</p>
+
+
+<h3>Check out the full dependency tree of selected scripts:</h3>
+
+<iframe src="http://loadr.aws.af.cm/deps?packages=
+  angular
+  underscore
+"></iframe>
+
+
+<h2>Feel free to change things and experiment in here! :)</h2>
+<p>E.g. see what happens if you add the script named <code>ticker</code> to the dependency tree above!</p>
+<p>List of available packages for this demo:</p>
+<ul>
+  <li>angular</li>
+  <li>angular-ui</li>
+  <li>backbone</li>
+  <li>c</li>
+  <li>f1</li>
+  <li>f2</li>
+  <li>ifPattern</li>
+  <li>jquery</li>
+  <li>jquery-ui</li>
+  <li>moment</li>
+  <li>ticker</li>
+  <li>underscore</li>
+</ul>
+<p>You can use them like this:</p>
+<script src="http://loadr.aws.af.cm/load?packages=
+  c
+  jquery
+  f1
+"></script>
+
+
+</body>
+</html>
