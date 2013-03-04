@@ -85,9 +85,9 @@ beforeEach(module(function($provide) {
 
 describe('hereDoc', function() {
   var hereDoc
-  beforeEach(inject(function() {
-    hereDoc = inject.get('hereDoc')
-  }))
+  beforeEach(inject(['hereDoc', function(hd) {
+    hereDoc = hd
+  }]))
   function test (a, b) {
     expect(hereDoc(a)).toBe(b)
   }
