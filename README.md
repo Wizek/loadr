@@ -187,7 +187,7 @@ JSONP compatible to avoid cross domain restrictions.
 
 You'll need: git, npm and nodejs.
 
-    git clone git://github.com/wizek/loadr.git
+    git clone https://github.com/Wizek/loadr.git
     cd loadr
     npm install
     PORT=3333 node .
