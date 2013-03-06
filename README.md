@@ -300,10 +300,44 @@ You are warm heartedly welcome there.
 - Would loadr make sense for CSS? How?
   If so, should we include support for Stylus, Less, Sass, etc? How do you imagine we do that?
 
-- Would loadr make sense for HTML templates? How?
-  Some libs will need them (think datepicker) and it is quite inconvinient to write them fullin in js.
+- Would loadr make sense for HTML templates? How? Some libs will need templates
+(think a datepicker) and it is quite inconvinient to write html in js strings.
 
 - How could we ease debugging? Source maps?
+
+- (How) Should we support languages that compile to js, like CoffeeScript?
+
+- (How) Should we enable commonjs support?
+
+    - `(+)` Better than polluting the global namespace.
+    - `(-)` Backwards incompatible, breaking change.
+    - `(?)` Let libraries decide?
+
+        Compare:
+
+        ```
+        "require commonjs"
+        var exports = {a: require('foobar')}
+        export('name', exports)
+        ```
+
+        With:
+
+        ```
+        "require angular"
+        angular.module('name', ['foobar'])
+        .factory('a', function(foobar_a){return fobar_a})
+        ```
+
+        - `(+)` Greater choice with the developer, space for innovation.
+        - `(-)` Might lead to fragmentation of the library ecosystem:
+        "I need to include the whole of angular just to get this simple lib".
+
+            - `(+0.5)` While that might be an issue right now, it will be
+            mitigated once libs are correctly modularized and you can write
+            `"require angular/dependency-injector"` istead of
+            `"require angular"`.
+
 
 
 
