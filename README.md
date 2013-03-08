@@ -307,7 +307,7 @@ You are warm heartedly welcome there.
 
 - (How) Should we support languages that compile to js, like CoffeeScript?
 
-- (How) Should we enable commonjs support?
+- (How) Should we enable commonjs (or some other module definition) support?
 
     - `(+)` Better than polluting the global namespace.
     - `(-)` Backwards incompatible, breaking change.
