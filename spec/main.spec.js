@@ -1,184 +1,3 @@
-global.di = require('ng-di')
-require("fs").readdirSync("./lib").forEach(function(file) {
-  require("../lib/" + file)
-})
-
-var _moduleBkp = module
-require('ng-di/dist/ng-di-mocks')
-
-
-var module = di.mock.module
-var cnt
-var done = function(expected) { expect(cnt).toBe(expected) }
-var injectInto = function(o, ary) {
-  console.warn('injectInto is deprecated')
-  var fn = function() {
-    for (var i = 0; i < arguments.length; i++) {
-      o[ary[i]] = arguments[i]
-    }
-  }
-  fn.$inject = ary
-  return inject(fn)
-}
-
-var get = di.injector(['modules']).get
-var superset = get('superset')
-var hereDoc = get('hereDoc')
-var noop = get('noop')
-
-
-beforeEach(module('modules'))
-
-// Suppress logfactory
-beforeEach(module(function($provide) {
-  // $provide.value('logFactory_whiteList', /$^/)
-  $provide.value('logFactory', function() {
-    return {log:noop,warn:noop}
-  })
-}))
-
-// Reset "async" callback count
-beforeEach(function() { cnt = 0 })
-
-// Add custom matchers
-beforeEach(function() {
-  this.addMatchers(
-    { toBeSupersetOf: function(subset) {
-        return superset(this.actual, subset)
-      }
-    , toThenEqual: function(expected) {
-        // console.log(222, /*this*/ jasmine.Matchers.prototype.toEqual)
-        var matchers = jasmine.Matchers.prototype
-        var value
-        var timedIn = false
-        this.actual.then(function(v) {
-          value = v
-          timedIn = true
-          cnt++
-        })
-        if (!timedIn) {
-          throw Error('Promise not fulfilled in time')
-        } else {
-          this.message = function() {
-            // var englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) { return ' ' + s.toLowerCase(); });
-            return 'Expected promised value ' + jasmine.pp(value) + " to equal " + jasmine.pp(expected)
-          }
-          // this.actual = value
-          var patchedEnv = require('underscore').extend({}, this, {actual: value})
-          return matchers.toEqual.call(patchedEnv, expected)
-        }
-      }
-    }
-  )
-})
-
-// onNextTick sould be instantanous (sync) to avoid any and all asyncronity.
-//   In other words, to eas testing by a great deal
-//
-// TODO Investigate. Can this cause any problems?
-//   Because Normally nt() is always async...
-beforeEach(module(function($provide) {
-  $provide.value('onNextTick', function (cb){ return cb() })
-}))
-
-
-
-describe('hereDoc', function() {
-  var hereDoc
-  beforeEach(inject(['hereDoc', function(hd) {
-    hereDoc = hd
-  }]))
-  function test (a, b) {
-    expect(hereDoc(a)).toBe(b)
-  }
-  it('should work on "empty" input', function() {
-    test(function() {/**/}, "")
-    test(function() {/*
-    */}, "")
-    test(function() {/*
-
-    */}, "")
-  })
-  xit('should work on unindented input', function() {
-    //    expect(hereDoc(function() {/*
-    //a
-    //    */})).toBe("a")
-    //
-    //
-    //    expect(hereDoc(function() {/*
-    //a b
-    //cd ef
-    //    */})).toBe("a b\ncd ef")
-    //
-    //
-    //    expect(hereDoc(function() {/*
-    //  a b
-    //  cd ef
-    //    */})).toBe("a b\ncd ef")
-  })
-  it('should remove indentation', function() {
-    test(function() {/*
-      a b
-      cd ef
-    */}, "a b\ncd ef")
-    test(function() {/*
-      a b
-        cd ef
-    */}, "a b\n  cd ef")
-  })
-})
-
-describe('superset', function() {
-  it('should ', function() {
-    expect(superset({}, {})).toBeTruthy()
-    expect(superset({a:1}, {})).toBeTruthy()
-    expect(superset({a:1}, {a:1})).toBeTruthy()
-
-    expect(superset({}, {a:1})).not.toBeTruthy()
-    expect(superset({a:1}, {a:2})).not.toBeTruthy()
-    expect(superset({a:1}, {a:1, b:2})).not.toBeTruthy()
-  })
-  it('should ', function() {
-    expect(typeof expect().toBeSupersetOf).toBe('function')
-    expect(function() {
-      expect({a:1}).toBeSupersetOf({a:1})
-    }).not.toThrow()
-  })
-})
-
-describe('onNextTick', function() {
-  it('should exist', function() {
-    inject(function(onNextTick) {
-      expect(onNextTick).toBeDefined()
-    })
-  })
-})
-
-describe('walkTreeFactory', function() {
-  it('should ', function() {
-    inject(function(walkTreeFactory) {
-      function test (a,b,c) {
-        expect(walkTreeFactory(b)(a)).toEqual(c)
-      }
-      // var noop =
-      test([], noop, [])
-      test([{a:[]}], function(){return 2}, [2])
-      test([{a:[]},{a:[]}], function(){return 2}, [2,2])
-      test([{a:[]}], function(v){return Object.keys(v)[0]}, ['a'])
-      test
-        ( [{k:'a',v:[{k:'b',v:[]}]}]
-        , function(v, cb){return [cb(v.v), v.k]}, [[[[[]
-        , 'b']], 'a']]
-        )
-      test
-        ( [{k:'a',v:[{k:'b',v:[]}]}]
-        , function(v, cb){var o={};o[v.k]=cb(v.v);return o}
-        , [{a:[{b:[]}]}]
-        )
-    })
-  })
-})
-
 describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
 
@@ -285,7 +104,7 @@ describe('loader', function() {
   })
 
   describe('recursive-resolver', function() {
-    beforeEach(module(function($provide) {
+    beforeEach(mod(function($provide) {
       var dependencyMap =
         { 'a': ['b']
         , 'c': ['b']
@@ -347,7 +166,7 @@ describe('loader', function() {
       })
     })
     describe('async', function() {
-      var dependenciesOfMockModule = module(function($provide) {
+      var dependenciesOfMockModule = mod(function($provide) {
         $provide.factory('dependenciesOf', function(q, dependenciesOfSync) {
           return function(name) {
             var d = q.defer()
@@ -361,7 +180,7 @@ describe('loader', function() {
         var fileContent
         var fileError
         var ifFunction = get('ifFunction')
-        beforeEach(module(function($provide) {
+        beforeEach(mod(function($provide) {
           /*\
            *  This is how one deals with spies!
            *  Either way is correct.
@@ -405,7 +224,7 @@ describe('loader', function() {
 
         it('should support directories', function() {
           // dependenciesOfMockModule()
-          module(function($provide) {
+          mod(function($provide) {
             $provide.value('nameParser', function(val) {
               return {isDirectory: true, path:val, name:val}
             })
