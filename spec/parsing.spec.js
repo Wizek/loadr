@@ -37,9 +37,12 @@ describe('parsing', function() {
     })
 
     it('should support http://', inj(function(nameParser) {
-      test('http://a.com', {isDirectory:false})
+      // test('http://a.com', {isDirectory:false})
       test('http://a.com', {protocol:"http"})
       test('http/a.com',   {protocol:"local"})
+
+      test('http://a.com', {url:'http://a.com'})
+      test('http://a.com', {path:'remote_cache/http---a.com'})
     }))
   })
 
