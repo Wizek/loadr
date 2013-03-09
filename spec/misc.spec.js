@@ -3,8 +3,11 @@ describe('promiseApiFromCbApi', function() {
   var successOfCbApi
   var failureOfCbApi
   var cbApi
+  var getPapiOfCb = function() {
+    return promiseApiFromCbApi(cbApi)
+  }
   function test (a, success, b) {
-    var e = expect(promiseApiFromCbApi(cbApi).apply({}, a))
+    var e = expect(getPapiOfCb().apply({}, a))
     if (success) {
       successOfCbApi()
       e.toResolveWith(b)
@@ -42,6 +45,18 @@ describe('promiseApiFromCbApi', function() {
     }
     test([1,2], 1, 's_1,2')
     test([3,4], 0, 'f_3,4')
+  })
+
+  it('should support multiple invocations', function() {
+    cbApi = function(arg, fn) {
+      successOfCbApi = function() { fn(null, "s"+arg) }
+      failureOfCbApi = function() { fn("f"+arg, null) }
+    }
+
+    test([1], 1, 's1')
+    test([2], 1, 's2')
+    test([3], 0, 'f3')
+    test([4], 0, 'f4')
   })
 })
 
