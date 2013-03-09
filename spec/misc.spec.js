@@ -1,3 +1,50 @@
+describe('promiseApiFromCbApi', function() {
+  var promiseApiFromCbApi
+  var successOfCbApi
+  var failureOfCbApi
+  var cbApi
+  function test (a, success, b) {
+    var e = expect(promiseApiFromCbApi(cbApi).apply({}, a))
+    if (success) {
+      successOfCbApi()
+      e.toResolveWith(b)
+    } else {
+      failureOfCbApi()
+      e.toRejectWith(b)
+    }
+  }
+  beforeEach(inj(['promiseApiFromCbApi', function(f) {
+    promiseApiFromCbApi = f
+  }]))
+
+  it('should make a promise api from a cb api', function() {
+    cbApi = function(fn) {
+      successOfCbApi = function() { fn(null, "Yay!") }
+      failureOfCbApi = function() { fn("Bummer!", null) }
+    }
+    test([], 1, 'Yay!')
+    test([], 0, 'Bummer!')
+  })
+
+  it('should support an argument', function() {
+    cbApi = function(arg, fn) {
+      successOfCbApi = function() { fn(null, "s"+arg) }
+      failureOfCbApi = function() { fn("f"+arg, null) }
+    }
+    test(["_passthrough1"], 1, 's_passthrough1')
+    test(["_passthrough2"], 0, 'f_passthrough2')
+  })
+
+  it('should support multiple arguments', function() {
+    cbApi = function(a1, a2, fn) {
+      successOfCbApi = function() { fn(null, "s_"+a1+','+a2) }
+      failureOfCbApi = function() { fn(      "f_"+a1+','+a2, null) }
+    }
+    test([1,2], 1, 's_1,2')
+    test([3,4], 0, 'f_3,4')
+  })
+})
+
 describe('hereDoc', function() {
   var hereDoc
   beforeEach(inject(['hereDoc', function(hd) {
