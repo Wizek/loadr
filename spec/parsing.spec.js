@@ -37,12 +37,33 @@ describe('parsing', function() {
     })
 
     it('should support http://', inj(function(nameParser) {
-      // test('http://a.com', {isDirectory:false})
       test('http://a.com', {protocol:"http"})
       test('http/a.com',   {protocol:"local"})
 
       test('http://a.com', {url:'http://a.com'})
       test('http://a.com', {path:'remote_cache/http---a.com'})
+    }))
+
+    it('should support github://', inj(function(nameParser) {
+      test('github://user/repo', {protocol:"github"})
+      test('github://userrepo', {protocol:"local"})
+      test('github://user/repo/file.js', {protocol:"github"})
+      test('github://user/repo/folder/file.js', {protocol:"github"})
+
+      expect(nameParser('github://u/r')     .github.user).toBe('u')
+      expect(nameParser('github://u/r')     .github.repo).toBe('r')
+      expect(nameParser('github://u/r')     .github.path).toBe('/index.js')
+      expect(nameParser('github://u/r/a.md').github.path).toBe('/a.md')
+      expect(nameParser('github://u/r/a')   .github.path).toBe('/a')
+
+      expect(nameParser('github://u/r').url)
+        .toBe('https://raw.github.com/u/r/master/index.js')
+
+      expect(nameParser('github://u/r/file.js').url)
+        .toBe('https://raw.github.com/u/r/master/file.js')
+
+      expect(nameParser('github://u/r/folder/file.js').url)
+        .toBe('https://raw.github.com/u/r/master/folder/file.js')
     }))
   })
 
