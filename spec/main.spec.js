@@ -74,6 +74,7 @@ describe('loader', function() {
         })
       })
       describe('dependenciesOf', function() {
+        var mockRequestResponse
         var mockFs
         var fileContent
         var fileError
@@ -100,6 +101,12 @@ describe('loader', function() {
           //   return cb(null, fileContent)
           // }
           // $provide.value('fs', mockFs)
+        }))
+
+        beforeEach(mod(function($provide) {
+          $provide.value('requestCapi', function(url, cb) {
+            return cb.apply(this, mockRequestResponse)
+          })
         }))
 
         it('should use q and dependencyMap', function() {
@@ -136,6 +143,24 @@ describe('loader', function() {
             test('test/', ['test/x', 'test/yy'])
             expect(mockFs.readdir).toHaveBeenCalled()
             done(1)
+          })
+        })
+
+        it('should support http', function() {
+          // dependenciesOfMockModule()
+          mod(function($provide) {
+            $provide.value('nameParser', function(val) {
+              return {protocol: 'http', url:val, name:val}
+            })
+          })
+          inject(function(dependenciesOf) {
+            function test (a, b) { expect(dependenciesOf(a)).toThenEqual(b) }
+
+            mockRequestResponse = [null, {body:'"require a"'}]
+            test('http://a.com', ['a'])
+            mockRequestResponse = [null, {body:'"require b"'}]
+            test('http://a.com', ['b'])
+            done(2)
           })
         })
 
