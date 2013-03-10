@@ -41,32 +41,60 @@ beforeEach(function() { cnt = 0 })
 
 // Add custom matchers
 beforeEach(function() {
+  var toResolveWith = function(expected) {
+    // console.log(222, /*this*/ jasmine.Matchers.prototype.toEqual)
+    var matchers = jasmine.Matchers.prototype
+    var value
+    var timedIn = false
+    if (!this.actual || !this.actual.then) {
+      throw Error('Not a promise!')
+    }
+    this.actual.then(function(v) {
+      value = v
+      timedIn = true
+      cnt++
+    })
+    if (!timedIn) {
+      throw Error('Promise not fulfilled in time')
+    } else {
+      this.message = function() {
+        // var englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) { return ' ' + s.toLowerCase(); });
+        return 'Expected resolved value ' + jasmine.pp(value) + " to equal " + jasmine.pp(expected)
+      }
+      // this.actual = value
+      var patchedEnv = require('underscore').extend({}, this, {actual: value})
+      return matchers.toEqual.call(patchedEnv, expected)
+    }
+  }
+  var toRejectWith = function(expected) {
+    // console.log(222, /*this*/ jasmine.Matchers.prototype.toEqual)
+    var matchers = jasmine.Matchers.prototype
+    var value
+    var timedIn = false
+    this.actual.then(noop, function(v) {
+      value = v
+      timedIn = true
+      cnt++
+    })
+    if (!timedIn) {
+      throw Error('Promise not rejected in time')
+    } else {
+      this.message = function() {
+        // var englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) { return ' ' + s.toLowerCase(); });
+        return 'Expected rejected value ' + jasmine.pp(value) + " to equal " + jasmine.pp(expected)
+      }
+      // this.actual = value
+      var patchedEnv = require('underscore').extend({}, this, {actual: value})
+      return matchers.toEqual.call(patchedEnv, expected)
+    }
+  }
   this.addMatchers(
     { toBeSupersetOf: function(subset) {
         return superset(this.actual, subset)
       }
-    , toThenEqual: function(expected) {
-        // console.log(222, /*this*/ jasmine.Matchers.prototype.toEqual)
-        var matchers = jasmine.Matchers.prototype
-        var value
-        var timedIn = false
-        this.actual.then(function(v) {
-          value = v
-          timedIn = true
-          cnt++
-        })
-        if (!timedIn) {
-          throw Error('Promise not fulfilled in time')
-        } else {
-          this.message = function() {
-            // var englishyPredicate = matcherName.replace(/[A-Z]/g, function(s) { return ' ' + s.toLowerCase(); });
-            return 'Expected promised value ' + jasmine.pp(value) + " to equal " + jasmine.pp(expected)
-          }
-          // this.actual = value
-          var patchedEnv = require('underscore').extend({}, this, {actual: value})
-          return matchers.toEqual.call(patchedEnv, expected)
-        }
-      }
+    , toThenEqual: toResolveWith
+    , toResolveWith: toResolveWith
+    , toRejectWith: toRejectWith
     }
   )
 })
