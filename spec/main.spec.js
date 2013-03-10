@@ -164,6 +164,14 @@ describe('loader', function() {
           })
         })
 
+        it('should support github', function() {
+          inject(function(dependenciesOf) {
+            function test (a, b) { expect(dependenciesOf(a)).toThenEqual(b) }
+            test('github://u/r',  ['https://raw.github.com/u/r/master/index.js'])
+            test('github://u/r/a.js', ['https://raw.github.com/u/r/master/a.js'])
+          })
+        })
+
         it('should integrate', function() {
           inject(function(dependenciesOf) {
             function test (a, b) {
