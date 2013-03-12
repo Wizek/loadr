@@ -30,10 +30,8 @@ beforeEach(mod('modules'))
 
 // Suppress logfactory
 beforeEach(mod(function($provide) {
-  // $provide.value('logFactory_whiteList', /$^/)
-  $provide.value('logFactory', function() {
-    return {log:noop,warn:noop}
-  })
+  $provide.value('logFactory_piercingMethods', {})
+  $provide.value('logFactory_whiteList', /nothing at all|!t!/)
 }))
 
 // Reset "async" callback count
