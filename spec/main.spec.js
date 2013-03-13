@@ -153,8 +153,8 @@ describe('loader', function() {
               return {protocol: 'http', url:val, name:val}
             })
           })
-          inject(function(dependenciesOf) {
-            function test (a, b) { expect(dependenciesOf(a)).toThenEqual(b) }
+          inject(function(uncachedDependenciesOf) {
+            function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
 
             mockRequestResponse = [null, {body:'"require a"'}]
             test('http://a.com', ['a'])
@@ -165,18 +165,18 @@ describe('loader', function() {
         })
 
         it('should support github', function() {
-          inject(function(dependenciesOf) {
-            function test (a, b) { expect(dependenciesOf(a)).toThenEqual(b) }
+          inject(function(uncachedDependenciesOf) {
+            function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
             test('github://u/r',  ['https://raw.github.com/u/r/master/index.js'])
             test('github://u/r/a.js', ['https://raw.github.com/u/r/master/a.js'])
           })
         })
 
         it('should integrate', function() {
-          inject(function(dependenciesOf) {
+          inject(function(uncachedDependenciesOf) {
             function test (a, b) {
               fileContent = hereDoc(a)
-              expect(dependenciesOf('x')).toThenEqual(b)
+              expect(uncachedDependenciesOf('x')).toThenEqual(b)
             }
 
             test('',  [])
