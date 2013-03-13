@@ -180,6 +180,34 @@ Would you like to use this output programmatically on the client side? [Reach
 out to us][contact] and/or submit a pull request  as it could easily be made
 JSONP compatible to avoid cross domain restrictions.
 
+##### Non-local protocols
+
+Since 0.2.0 loadr supports http(s):// and github:// protocols. (npm:// and
+bower:// will follow) This is how you can make loadr to go out and fetch JS
+for you from the WWW:
+
+http://loadr.aws.af.cm/load?packages=github://loadr/angular
+
+Or:
+
+http://loadr.aws.af.cm/load?packages=http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
+
+Have a look at what happens behind the curtains:
+
+http://loadr.aws.af.cm/deps?packages=github://loadr/angular
+
+See, it desugares to an HTTP link pointing to raw.github.com, which requires
+another HTTP link. Clever, eh? ^^ With this knowledge you too can publish JS
+files **with full dependency management using only GitHub**. Nothing else is
+needed.
+
+
+##### Caching
+
+Since 0.3.0 loadr caches source files (local, github:// and http(s):// as well)
+into memory. You can have a look into its current state by visiting:
+
+http://loadr.aws.af.cm/cache
 
 
 
