@@ -9,5 +9,6 @@
   , "ng-di": "git://github.com/Wizek/ng-di.git#develop"
   , "underscore": "1.4.x"
   , "request": "2.14.x"
+  , "jade": "0.28.x"
   }
 }
