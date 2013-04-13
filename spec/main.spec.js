@@ -169,6 +169,10 @@ describe('loader', function() {
             function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
             test('github://u/r',  ['https://raw.github.com/u/r/master/index.js'])
             test('github://u/r/a.js', ['https://raw.github.com/u/r/master/a.js'])
+
+            test('github://u/r-r', ['https://raw.github.com/u/r-r/master/index.js'])
+            test('github://u/r.r', ['https://raw.github.com/u/r.r/master/index.js'])
+            test('github://btford/angular-dragon-drop', ['https://raw.github.com/btford/angular-dragon-drop/master/index.js'])
           })
         })
 
