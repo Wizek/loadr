@@ -1,142 +1,24 @@
 !!!
 html
   head
-    :stylus
+    title loadr
+    link(rel="stylesheet", href="/main.css")
 
-      $base-text-color = fade-out(black, 0.25)
 
-      body
-        font 16pt Helvetica
-        margin 0
-        color $base-text-color
-
-      .logo
-        color rgba(0,0,0,.5)
-        margin-top 0
-        .from
-        .version
-          color rgba(0,0,0,.25)
-
-      .links
-        padding 0
-        &, & ul
-          list-style-type none
-        & ul
-          padding-left 1em
-
-      // a:link    {color:blue;}
-      // a:link:visited {color:green;}
-      // a:hover   {color:red;}
-      // a:active  {color:yellow;}
-
-      a
-        color rgba(0,0,0, .5)
-        // background fade-out(black, 0.9)
-        // font-weight 900
-        text-decoration: none
-        &:active
-          color black
-          // font-weight 900
-          text-decoration: none
-        &:hover
-          text-decoration: underline
-        &:visited
-          color rgba(0,0,0, .5)
-          background yellow
-          // display: none
-
-      .side-bar
-        width: 200px;
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        overflow: auto;
-        padding: 30px 0 30px 30px;
-      .content
-        font 12pt Helvetica
-        position: absolute;
-        left: 230px;
-        top: 0;
-        bottom: 0;
-        right 0
-        overflow: auto;
-        padding: 30px;
-      .content-fixwidth
-        width: 700px
-      li:last-child {
-        // margin-bottom: 1ex;
-        padding-bottom: 1ex;
-      }
   body
     .side-bar
-      h1.logo loadr
+      h1.logo
+        a(href) loadr
         .version= settings.version
 
-      //- p GitHub repository: !{bareLink("https://github.com")}
-      //- p Documentation: !{bareLink("http://githsdsdub.com")}
-
-      mixin asdasd(title)
-        li
-          a(href="#introduction")= title
-          ul
-
-
       ul.links
-        li
-          a(href="#introduction") introduction
-          ul
-            li
-              a(href="#") quick start guide
-              ul
-        li
-          a(href="#") the future
-          ul
-            li
-              a(href="#") open questions
-              ul
-            li
-              a(href="#") roadmap
-              ul
-                li
-                  a(href="#") the future
-                  ul
-                    li
-                      a(href="#") open questions
-                      ul
-                    li
-                      a(href="#") roadmap
-                      ul
-                    li
-                      a(href="#") vision
-                      ul
-                        li
-                          a(href="#") the future
-                          ul
-                            li
-                              a(href="#") open questions
-                              ul
-                            li
-                              a(href="#") roadmap
-                              ul
-                            li
-                              a(href="#") vision
-                              ul
-        li
-          a(href="#") vision
-          ul
-            li
-              a(href="#") the future
-              ul
-                li
-                  a(href="#") open questions
-                  ul
-                li
-                  a(href="#") roadmap
-                  ul
-                li
-                  a(href="#") vision
-                  ul
+        li: a(href="/docs") documentation
+        li: a(href="https://github.com/Wizek/loadr") github repository
+        br
+        li: a(href="/cache") cache status
+
 
     .content: .content-fixwidth
+      //- iframe(src="https://workflowy.com/shared/009e9303-d3c8-5b7d-686f-c980dd681716/")
       include ../README.md
 
