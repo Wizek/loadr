@@ -1,46 +1,12 @@
-# loadr
-
 Handling all your JS dependencies for kick-starting your projects — and a *little* more.
 
 
 
 
 
-### Try it out online *[over here!][demo]*
-
-
-
-
-
-## Vision
-
-**Imagine this:** You have a great idea, and want to jump into experimenting with it as soon as possible.
-You know you'll need some sort of sortable or drag'n'drop functionality.
-You go to loadr's discovery site where you input "sortable drag and drop".
-Results return quickly ordered based on a sophisticated relevance score
-— which takes into account among others the features, the popularity, the "maintained-ness", the the alternative-graph of the results.
-
-You click the first one.
-In the alternative list *(like at [alternativeto.net](http://alternativeto.net))* there is `jquery-ui/sortable`.
-It might be considered a little outdated at this point
-*(because all the modern libs are now properly componentialized and don't depend on monolithic libraries such as jQuery)*
-but at least you are familiar with it's API.
-
-Yay for backwards compatibility!
-*(Yes, if it works with a script tag, it works with loadr as well. Out of the box.)*
-
-Armed with the new knowledge, you create `idea.html` with
-
-    <!doctype html>
-
-    <script src="http://loadr.aws.af.cm/load?packages=
-      jquery-ui/sortable
-      underscore
-    "></script>
-
-    <script> /* Here starts everything */ </script>
-
-And it might just be the humble beginning of your most awesome project so far.
+## Live demo
+- [simple](http://plnkr.co/edit/RugNn8?p=preview)
+- [advanced][demo]
 
 
 
@@ -273,6 +239,72 @@ to use loadr once you have your local version set up.
 
 
 
+## What makes loadr different from...
+
+- **bower**:
+  You still have to include everything manually via lots of script tags or fall back to AMD. Therefore doesn't encourage much needed componentialization of libraries.
+
+- **RequireJS and other AMD**:
+  Many load-parse cycles makes this approach slow even for development.
+
+  Wasting vast amounts of time waiting for network is no fun.
+
+- **component**: This one is pretty close, but let's see:
+
+  You just set up a local loadr to be a daemon/service and you can forget all about it.
+  No more `cd project; watch make &` every time you resume work in one of your projects.
+  That rings a bell, doesn't it? :)
+
+  Even better:
+  to use loadr [CDN style][cdn-style] you don't even have to install or run anything,
+  just include the single "magical" script tag and you are all set!
+
+
+
+
+
+# The future
+
+## Coming soon
+
+There are a number of features we can have further along the line:
+
+
+- Online platform to register and manage your published libs.
+
+  Might not be needed if we opt for github, bower or component for registry as mentioned in the [open questions][openQuestions] section.
+
+
+- Discovery platform for loadr libs.
+
+  As mentioned in the [vision](#vision).
+
+
+- 'Negative loading' to support deferred scripts and reduced initial payload.
+
+  Something similar to what is mentioned in [this talk](http://www.youtube.com/watch?v=mGENRKrdoGY).
+
+
+- Semantic version handling.
+
+  Something like what is described in [this npm doc](https://npmjs.org/doc/json.html#dependencies).
+
+
+- Progress bar.
+
+  If you specify an external source for loadr,
+  you will be presented with a progress bar and
+  the page will auto-refresh once complete.
+  This featuer will ensure that you won't have to use a command line interface to use loadr, everything is taken care of for you, right when you need it.
+
+
+- Universal packages.
+
+  Something like `"require npm://underscore"` for those that would work in the browser too.
+
+
+
+
 ## Open questions
 
 I'd love to have some participation of the community to help decide with these
@@ -370,66 +402,40 @@ You are warm heartedly welcome there.
 
 
 
-## What makes loadr different from...
-
-- **bower**:
-  You still have to include everything manually via lots of script tags or fall back to AMD. Therefore doesn't encourage much needed componentialization of libraries.
-
-- **RequireJS and other AMD**:
-  Many load-parse cycles makes this approach slow even for development.
-
-  Wasting vast amounts of time waiting for network is no fun.
-
-- **component**: This one is pretty close, but let's see:
-
-  You just set up a local loadr to be a daemon/service and you can forget all about it.
-  No more `cd project; watch make &` every time you resume work in one of your projects.
-  That rings a bell, doesn't it? :)
-
-  Even better:
-  to use loadr [CDN style][cdn-style] you don't even have to install or run anything,
-  just include the single "magical" script tag and you are all set!
 
 
+## Vision
+
+**Imagine this:** You have a great idea, and want to jump into experimenting with it as soon as possible.
+You know you'll need some sort of sortable or drag'n'drop functionality.
+You go to loadr's discovery site where you input "sortable drag and drop".
+Results return quickly ordered based on a sophisticated relevance score
+— which takes into account among others the features, the popularity, the "maintained-ness", the the alternative-graph of the results.
+
+You click the first one.
+In the alternative list *(like at [alternativeto.net](http://alternativeto.net))* there is `jquery-ui/sortable`.
+It might be considered a little outdated at this point
+*(because all the modern libs are now properly componentialized and don't depend on monolithic libraries such as jQuery)*
+but at least you are familiar with it's API.
+
+Yay for backwards compatibility!
+*(Yes, if it works with a script tag, it works with loadr as well. Out of the box.)*
+
+Armed with the new knowledge, you create `idea.html` with
+
+    <!doctype html>
+
+    <script src="http://loadr.aws.af.cm/load?packages=
+      jquery-ui/sortable
+      underscore
+    "></script>
+
+    <script> /* Here starts everything */ </script>
+
+And it might just be the humble beginning of your most awesome project so far.
 
 
 
-## The future
-
-There are a number of features we can have further along the line:
-
-
-- Online platform to register and manage your published libs.
-
-  Might not be needed if we opt for github, bower or component for registry as mentioned in the [open questions][openQuestions] section.
-
-
-- Discovery platform for loadr libs.
-
-  As mentioned in the [vision](#vision).
-
-
-- 'Negative loading' to support deferred scripts and reduced initial payload.
-
-  Something similar to what is mentioned in [this talk](http://www.youtube.com/watch?v=mGENRKrdoGY).
-
-
-- Semantic version handling.
-
-  Something like what is described in [this npm doc](https://npmjs.org/doc/json.html#dependencies).
-
-
-- Progress bar.
-
-  If you specify an external source for loadr,
-  you will be presented with a progress bar and
-  the page will auto-refresh once complete.
-  This featuer will ensure that you won't have to use a command line interface to use loadr, everything is taken care of for you, right when you need it.
-
-
-- Universal packages.
-
-  Something like `"require npm://underscore"` for those that would work in the browser too.
 
 
 
