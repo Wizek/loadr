@@ -1,0 +1,20 @@
+<h1>loadr demo</h1>
+
+<script src="http://loadr.aws.af.cm/load?packages=
+  jquery
+  underscore
+"></script>
+
+
+<script>
+  $(function(){
+    _(30).times(function(i) {
+      var $el = $('<div>Mouseover me #' + (i+1) + '</div>')
+        .appendTo('body')
+        .hide(0).show(100 * i)
+        .mouseenter(function() { $el.hide(1000) })
+        .mouseleave(function() { $el.show(1000) })
+    })
+  })
+</script>
+
