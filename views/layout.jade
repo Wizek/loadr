@@ -1,0 +1,31 @@
+!!!
+html
+  head: block head
+    title loadr
+    link(rel="stylesheet", href="http://yandex.st/highlightjs/7.3/styles/default.min.css")
+    link(rel="stylesheet", href="/main.css")
+    :loadr
+      http://yandex.st/highlightjs/7.3/highlight.min.js
+    script
+      hljs.initHighlightingOnLoad()
+
+
+  body
+    .side-bar: block side-bar
+      h1.logo: block logo
+        .title: block title
+        .from: block logo-from
+          | of
+        a(href="/") loadr
+        .version= settings.version
+
+      ul.links: block side-bar-links
+        li: a(href="/docs") documentation
+        li: a(href="https://github.com/Wizek/loadr") github repository
+        li: a(href="/changelog") changelog
+        br
+        li: a(href="/cache") cache status
+
+
+    .content: .content-fixwidth
+      block content
