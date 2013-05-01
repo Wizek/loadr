@@ -5,7 +5,7 @@ Handling all your JS dependencies for kick-starting your projects — and a *lit
 
 
 ## Live demo
-- [simple](http://plnkr.co/edit/RugNn8?p=preview)
+- [simple][simpleDemo]
 - [advanced][demo]
 
 
@@ -21,8 +21,8 @@ the only native one we have is through html script tag
 which didn't scale properly on it's own — up until now!
 
 Let me propose a solution which I feel has the potential to be the best one so
-far. Let alone propose, you can try out a (working prototype) version right now
-[over here][demo] if you feel adventurous!
+far. Let alone propose, you can try out a working version right now
+[over here][simpleDemo] if you feel adventurous!
 
 Read the [quick start guide][quickStartGuide] to get up to speed quickly.
 
@@ -40,7 +40,7 @@ Do you have some answers to one of my [open questions][openQuestions]?
 There are two main use-cases:
 
 - If you want to **kick-start a project** or **start an experiment quickly**
-  (either locally or in a jsfiddle, [plnkr][demo], etc), use the [CDN-style][cdn-style]
+  (either locally or in a jsfiddle, [plnkr][simpleDemo], etc), use the [CDN-style][cdn-style]
 - If you want to use loadr in a **production environment** or
   you need the ability to **develop offline**, use the [local version](#local-install)
 
@@ -57,7 +57,7 @@ order and details depend greatly on your [early][openQuestions]
 
 #### CDN
 
-**Try it out online [*over here*][demo]**.
+**Try it out online [*over here*][simpleDemo]**.
 
     <script src="http://loadr.aws.af.cm/load?packages=
       angular
@@ -265,7 +265,7 @@ to use loadr once you have your local version set up.
 
 # The future
 
-## Coming soon
+## Coming soon (aka TODO)
 
 There are a number of features we can have further along the line:
 
@@ -469,6 +469,7 @@ THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
 
 [TOC]: #toc
 [demo]: http://plnkr.co/edit/WYRqk7T928iuCp3RYWvw?p=preview
+[simpleDemo]: http://plnkr.co/edit/RugNn8?p=preview
 [contact]: #contact
 [vision]: #vision
 [future]: #the-future
