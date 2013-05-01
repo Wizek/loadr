@@ -1,24 +1,7 @@
-!!!
-html
-  head
-    title loadr
-    link(rel="stylesheet", href="/main.css")
+extends layout
 
+block content
+  include ../README.md
 
-  body
-    .side-bar
-      h1.logo
-        a(href) loadr
-        .version= settings.version
-
-      ul.links
-        li: a(href="/docs") documentation
-        li: a(href="https://github.com/Wizek/loadr") github repository
-        br
-        li: a(href="/cache") cache status
-
-
-    .content: .content-fixwidth
-      //- iframe(src="https://workflowy.com/shared/009e9303-d3c8-5b7d-686f-c980dd681716/")
-      include ../README.md
-
+block title
+  | docs
