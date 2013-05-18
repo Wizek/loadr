@@ -1,6 +1,7 @@
 { "name": "loadr"
 , "version": "0.3.0"
 , "private": true
+, "repository": "https://github.com/Wizek/loadr"
 , "scripts":
   { "start": "node ."
   }
