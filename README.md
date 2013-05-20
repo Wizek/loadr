@@ -26,10 +26,6 @@ far. Let alone propose, you can try out a working version right now
 
 Read the [quick start guide][quickStartGuide] to get up to speed quickly.
 
-I expect discussion from the community.
-Is there anything I missed?
-Do you have some answers to one of my [open questions][openQuestions]?
-[I'd love to hear from you][contact].
 
 
 
@@ -44,12 +40,6 @@ There are two main use-cases:
 - If you want to use loadr in a **production environment** or
   you need the ability to **develop offline**, use the [local version](#local-install)
 
-As the saying goes, this is only the tip of the iceberg. That is, the stuff that
-already works and is written about in this the quick start guide is just the
-beginning. Read the [The Vision][vision] or [The Future][future] to get a
-glimpse. There are a lot of features to be added in the near future. Their
-order and details depend greatly on your [early][openQuestions]
-[feedback][contact].
 
 
 
@@ -232,7 +222,7 @@ use them like you would the cdn way, just with the different domain and port:
       folder/
     "></script>
 
-*Note:* [lean more about the CDN-style][cdn-style] for more information on how
+*Note:* [learn more about the CDN-style][cdn-style] for more information on how
 to use loadr once you have your local version set up.
 
 
@@ -264,6 +254,17 @@ to use loadr once you have your local version set up.
 
 
 # The future
+
+As the saying goes, this is only the tip of the iceberg. That is, the stuff that
+already works and is written about in this the readme is just the
+beginning. Read the [The Vision][vision] or [The Future][future] to get a
+glimpse. There are a lot of features to be added in the near future. Their
+order and details depend greatly on [your][openQuestions]
+[feedback][contact].
+
+
+
+
 
 ## Coming soon (aka TODO)
 
@@ -322,9 +323,9 @@ You are warm heartedly welcome there.
 
         local (currently implemented)
         local, relative path
-        url
+        url (currently implemented)
         git
-        github
+        github (currently implemented)
         bower
         component
         something else?
@@ -361,7 +362,7 @@ You are warm heartedly welcome there.
   If so, should we include support for Stylus, Less, Sass, etc? How do you imagine we do that?
 
 - Would loadr make sense for HTML templates? How? Some libs will need templates
-(think a datepicker) and it is quite inconvinient to write html in js strings.
+(think datepicker) and it is quite inconvinient to write html in js strings.
 
 - How could we ease debugging? Source maps?
 
