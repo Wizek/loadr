@@ -1,6 +1,14 @@
 # Changelog
 
 
+## 2013-04-19, v0.4.0
+- Added website
+- Added changelog
+- Improved documentation
+- Added a simple example
+- Changed default port to 3333
+
+
 ## 2013-04-13, v0.3.1
 - Hotfixed github protocol
 
