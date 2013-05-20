@@ -1,6 +1,7 @@
 { "name": "loadr"
-, "version": "0.3.0"
+, "version": "0.4.0"
 , "private": true
+, "repository": "https://github.com/Wizek/loadr"
 , "scripts":
   { "start": "node ."
   }
@@ -9,5 +10,8 @@
   , "ng-di": "git://github.com/Wizek/ng-di.git#develop"
   , "underscore": "1.4.x"
   , "request": "2.14.x"
+  , "jade": "0.28.x"
+  , "stylus": "0.32.x"
+  , "markdown": "0.4.x"
   }
 }
