@@ -179,11 +179,24 @@ describe('loader', function() {
         it('should support github relative', function() {
           inject(function(uncachedDependenciesOf) {
             function test (ctx, a, b) { expect(uncachedDependenciesOf(a,ctx)).toThenEqual(b) }
-            // test('github://u/r'           , './a.js',  ['github://u/r/a.js'])
-            test('github://u/r/'          , './a.js'  ,  ['github://u/r/a.js'])
-            test('github://u/r/b.js'      , './c.js'  ,  ['github://u/r/c.js'])
-            test('github://u/r/f/b.js'    , './c.js'  ,  ['github://u/r/f/c.js'])
-            test('github://u/r/f/b.js'    , '../c.js' ,  ['github://u/r/c.js'])
+            // test('github://u/r/'          , './a.js'  ,  ['github://u/r/a.js'])
+            // test('github://u/r/b.js'      , './c.js'  ,  ['github://u/r/c.js'])
+            // test('github://u/r/f/b.js'    , './c.js'  ,  ['github://u/r/f/c.js'])
+            // test('github://u/r/f/b.js'    , '../c.js' ,  ['github://u/r/c.js'])
+
+            test('github://u/r/a/b/' , '../x.js'    ,  ['github://u/r/a/x.js'])
+            test('github://u/r/a/b/' , './x.js'     ,  ['github://u/r/a/b/x.js'])
+            test('github://u/r/a/b/' , '././x.js'   ,  ['github://u/r/a/b/x.js'])
+            test('github://u/r/a/b/' , '.././x.js'  ,  ['github://u/r/a/x.js'])
+            test('github://u/r/a/b/' , './../x.js'  ,  ['github://u/r/a/x.js'])
+            test('github://u/r/a/b/' , '../../x.js' ,  ['github://u/r/x.js'])
+
+            // test('github://u/r/a/b/' , '../'       ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , './'        ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , '././'      ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , '.././'     ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , './../'     ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , '../../'    ,  ['github://u/r/???'])
           })
         })
 
