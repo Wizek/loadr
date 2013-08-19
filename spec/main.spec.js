@@ -167,7 +167,7 @@ describe('loader', function() {
         it('should support github', function() {
           inject(function(uncachedDependenciesOf) {
             function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
-            test('github://u/r',  ['https://raw.github.com/u/r/master/index.js'])
+            test('github://u/r/',  ['https://raw.github.com/u/r/master/index.js'])
             test('github://u/r/a.js', ['https://raw.github.com/u/r/master/a.js'])
 
             test('github://u/r-r', ['https://raw.github.com/u/r-r/master/index.js'])
@@ -178,10 +178,19 @@ describe('loader', function() {
 
         it('should support github relative', function() {
           inject(function(uncachedDependenciesOf) {
-            function test (a, ctx, b) { expect(uncachedDependenciesOf(a,ctx)).toThenEqual(b) }
-            test('./asd.js', 'github://u/r'  ['https://raw.github.com/u/r/master/asd.js'])
+            function test (ctx, a, b) { expect(uncachedDependenciesOf(a,ctx)).toThenEqual(b) }
+            // test('github://u/r'           , './a.js',  ['github://u/r/a.js'])
+            test('github://u/r/'          , './a.js'  ,  ['github://u/r/a.js'])
+            test('github://u/r/b.js'      , './c.js'  ,  ['github://u/r/c.js'])
+            test('github://u/r/f/b.js'    , './c.js'  ,  ['github://u/r/f/c.js'])
+            test('github://u/r/f/b.js'    , '../c.js' ,  ['github://u/r/c.js'])
           })
         })
+
+        it('should formalize sloppy urls', inject(function(uncachedDependenciesOf) {
+          function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
+          test('github://u/r',  ['github://u/r/'])
+        }))
 
         it('should integrate', function() {
           inject(function(uncachedDependenciesOf) {
