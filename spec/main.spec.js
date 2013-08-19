@@ -176,6 +176,13 @@ describe('loader', function() {
           })
         })
 
+        it('should support github relative', function() {
+          inject(function(uncachedDependenciesOf) {
+            function test (a, ctx, b) { expect(uncachedDependenciesOf(a,ctx)).toThenEqual(b) }
+            test('./asd.js', 'github://u/r'  ['https://raw.github.com/u/r/master/asd.js'])
+          })
+        })
+
         it('should integrate', function() {
           inject(function(uncachedDependenciesOf) {
             function test (a, b) {

@@ -46,7 +46,6 @@ describe('parsing', function() {
 
     it('should support github://', inj(function(nameParser) {
       test('github://user/repo', {protocol:"github"})
-      test('github://userrepo', {protocol:"local"})
       test('github://user/repo/file.js', {protocol:"github"})
       test('github://user/repo/folder/file.js', {protocol:"github"})
 
@@ -65,6 +64,22 @@ describe('parsing', function() {
       expect(nameParser('github://u/r/folder/file.js').url)
         .toBe('https://raw.github.com/u/r/master/folder/file.js')
     }))
+
+    it('should support relative', inj(function(nameParser) {
+      test('../x.js', { protocol:'relative' })
+      test('./x.js', { protocol:'relative' })
+      test('../', { protocol:'relative' })
+      test('./', { protocol:'relative' })
+      test('.././x.js', { protocol:'relative' })
+      test('./../x.js', { protocol:'relative' })
+      test('.././', { protocol:'relative' })
+      test('./../', { protocol:'relative' })
+    }))
+
+    it('should throw for bogous names', function() {
+      expect(nameParser.bind({}, '.../x.js')).toThrow()
+      expect(nameParser.bind({}, 'github://userrepo')).toThrow()
+    })
   })
 
 
