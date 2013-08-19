@@ -292,7 +292,9 @@ describe('loader', function() {
         it('should return a tree', function() {
           inject(function(dependencyTreeOf) {
             function test (a, b) {
-              expect(dependencyTreeOf(a)).toThenEqual(b)
+              dependencyTreeOf(a).then(function(v) {
+                expect(v).toBeSupersetOf(b)
+              })
             }
             test([], [])
             test(['b'], [{name:'b',deps:[]}])
