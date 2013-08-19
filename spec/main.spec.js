@@ -167,14 +167,43 @@ describe('loader', function() {
         it('should support github', function() {
           inject(function(uncachedDependenciesOf) {
             function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
-            test('github://u/r',  ['https://raw.github.com/u/r/master/index.js'])
+            test('github://u/r/',  ['https://raw.github.com/u/r/master/index.js'])
             test('github://u/r/a.js', ['https://raw.github.com/u/r/master/a.js'])
 
-            test('github://u/r-r', ['https://raw.github.com/u/r-r/master/index.js'])
-            test('github://u/r.r', ['https://raw.github.com/u/r.r/master/index.js'])
-            test('github://btford/angular-dragon-drop', ['https://raw.github.com/btford/angular-dragon-drop/master/index.js'])
+            test('github://u/r-r/', ['https://raw.github.com/u/r-r/master/index.js'])
+            test('github://u/r.r/', ['https://raw.github.com/u/r.r/master/index.js'])
+            test('github://btford/angular-dragon-drop/', ['https://raw.github.com/btford/angular-dragon-drop/master/index.js'])
           })
         })
+
+        it('should support github relative', function() {
+          inject(function(uncachedDependenciesOf) {
+            function test (ctx, a, b) { expect(uncachedDependenciesOf(a,ctx)).toThenEqual(b) }
+            // test('github://u/r/'          , './a.js'  ,  ['github://u/r/a.js'])
+            // test('github://u/r/b.js'      , './c.js'  ,  ['github://u/r/c.js'])
+            // test('github://u/r/f/b.js'    , './c.js'  ,  ['github://u/r/f/c.js'])
+            // test('github://u/r/f/b.js'    , '../c.js' ,  ['github://u/r/c.js'])
+
+            test('github://u/r/a/b/' , '../x.js'    ,  ['github://u/r/a/x.js'])
+            test('github://u/r/a/b/' , './x.js'     ,  ['github://u/r/a/b/x.js'])
+            test('github://u/r/a/b/' , '././x.js'   ,  ['github://u/r/a/b/x.js'])
+            test('github://u/r/a/b/' , '.././x.js'  ,  ['github://u/r/a/x.js'])
+            test('github://u/r/a/b/' , './../x.js'  ,  ['github://u/r/a/x.js'])
+            test('github://u/r/a/b/' , '../../x.js' ,  ['github://u/r/x.js'])
+
+            // test('github://u/r/a/b/' , '../'       ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , './'        ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , '././'      ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , '.././'     ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , './../'     ,  ['github://u/r/???'])
+            // test('github://u/r/a/b/' , '../../'    ,  ['github://u/r/???'])
+          })
+        })
+
+        it('should formalize sloppy urls', inject(function(uncachedDependenciesOf) {
+          function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
+          test('github://u/r',  ['github://u/r/'])
+        }))
 
         it('should integrate', function() {
           inject(function(uncachedDependenciesOf) {
@@ -263,7 +292,9 @@ describe('loader', function() {
         it('should return a tree', function() {
           inject(function(dependencyTreeOf) {
             function test (a, b) {
-              expect(dependencyTreeOf(a)).toThenEqual(b)
+              dependencyTreeOf(a).then(function(v) {
+                expect(v).toBeSupersetOf(b)
+              })
             }
             test([], [])
             test(['b'], [{name:'b',deps:[]}])

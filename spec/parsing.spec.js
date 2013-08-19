@@ -45,19 +45,17 @@ describe('parsing', function() {
     }))
 
     it('should support github://', inj(function(nameParser) {
-      test('github://user/repo', {protocol:"github"})
-      test('github://userrepo', {protocol:"local"})
       test('github://user/repo/file.js', {protocol:"github"})
       test('github://user/repo/folder/file.js', {protocol:"github"})
 
-      expect(nameParser('github://u/r')     .github.user).toBe('u')
-      expect(nameParser('github://u/r')     .github.repo).toBe('r')
-      expect(nameParser('github://u/r')     .github.path).toBe('/index.js')
-      expect(nameParser('github://u/r/a.md').github.path).toBe('/a.md')
-      expect(nameParser('github://u/r/a')   .github.path).toBe('/a')
+      expect(nameParser('github://u/r/')     ).toBeSupersetOf({ github: { user: 'u' } } )
+      expect(nameParser('github://u/r/')     ).toBeSupersetOf({ github: { repo: 'r' } } )
+      expect(nameParser('github://u/r/')     ).toBeSupersetOf({ github: { path: 'index.js' } } )
+      expect(nameParser('github://u/r/a.md')).toBeSupersetOf({ github: { path: 'a.md' } } )
+      expect(nameParser('github://u/r/a')   ).toBeSupersetOf({ github: { path: 'a' } } )
 
-      expect(nameParser('github://u/r').url)
-        .toBe('https://raw.github.com/u/r/master/index.js')
+      expect(nameParser('github://u/r/'))
+        .toBeSupersetOf({ url: 'https://raw.github.com/u/r/master/index.js' })
 
       expect(nameParser('github://u/r/file.js').url)
         .toBe('https://raw.github.com/u/r/master/file.js')
@@ -65,6 +63,26 @@ describe('parsing', function() {
       expect(nameParser('github://u/r/folder/file.js').url)
         .toBe('https://raw.github.com/u/r/master/folder/file.js')
     }))
+
+    it('should support github sloppy', inj(function(nameParser) {
+      test('github://user/repo', { protocol:"githubSloppy" })
+    }))
+
+    it('should support relative', inj(function(nameParser) {
+      test('../x.js', { protocol:'relative' })
+      test('./x.js', { protocol:'relative' })
+      test('../', { protocol:'relative' })
+      test('./', { protocol:'relative' })
+      test('.././x.js', { protocol:'relative' })
+      test('./../x.js', { protocol:'relative' })
+      test('.././', { protocol:'relative' })
+      test('./../', { protocol:'relative' })
+    }))
+
+    it('should throw for bogous names', function() {
+      expect(nameParser.bind({}, '.../x.js')).toThrow()
+      expect(nameParser.bind({}, 'github://userrepo')).toThrow()
+    })
   })
 
 

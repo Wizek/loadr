@@ -60,6 +60,18 @@ describe('promiseApiFromCbApi', function() {
   })
 })
 
+describe('superset', function() {
+  it('should work', function() {
+    expect(superset({a:1}, {a:1})).toBe(true)
+    expect(superset({a:1}, {a:2})).toBe(false)
+    expect(superset({a:1}, {a:1, b:2})).toBe(false)
+
+    expect(superset({x:{a:1}}, {x:{a:1}})).toBe(true)
+    expect(superset({x:{a:1}}, {x:{a:2}})).toBe(false)
+    expect(superset({x:{a:1}}, {x:{a:1, b:2}})).toBe(false)
+  })
+})
+
 describe('hereDoc', function() {
   var hereDoc
   beforeEach(inject(['hereDoc', function(hd) {

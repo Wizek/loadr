@@ -1,6 +1,10 @@
 # Changelog
 
 
+## 2013-08-19, v0.4.1
+- Added relative-url support for github and HTTP(S) protocols
+    - Examples: `"require ../x.js"`, `"require ./folder/y.js"`
+
 ## 2013-04-19, v0.4.0
 - Added website
 - Added changelog
