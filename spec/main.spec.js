@@ -1,4 +1,4 @@
-xdescribe('loader', function() {
+describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
 
   describe('recursive-resolver', function() {
