@@ -1,6 +1,12 @@
 describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
 
+  it('should match protocol', inject(function(protocolOf) {
+    function test (a, b) { expect(protocolOf(a)).toEqual(b) }
+    test('github://u/r/',         'github')
+    test('github://u/r@v1.0.0/',  'github')
+  }))
+
   describe('recursive-resolver', function() {
     beforeEach(mod(function($provide) {
       var dependencyMap =
@@ -204,6 +210,12 @@ describe('loader', function() {
           function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
           test('github://u/r',  ['github://u/r/'])
         }))
+
+        it('should formalize sloppy urls', inject(function(uncachedDependenciesOf) {
+          function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
+          test('github://u/r@v1.0.0/',  ['https://raw.github.com/u/r/v1.0.0/index.js'])
+        }))
+
 
         it('should integrate', function() {
           inject(function(uncachedDependenciesOf) {
