@@ -211,7 +211,7 @@ describe('loader', function() {
           test('github://u/r',  ['github://u/r/'])
         }))
 
-        it('should formalize sloppy urls', inject(function(uncachedDependenciesOf) {
+        it('should support explicit github versions', inject(function(uncachedDependenciesOf) {
           function test (a, b) { expect(uncachedDependenciesOf(a)).toThenEqual(b) }
           test('github://u/r@v1.0.0/',  ['https://raw.github.com/u/r/v1.0.0/index.js'])
         }))
