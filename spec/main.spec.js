@@ -1,6 +1,38 @@
 describe('loader', function() {
   var charSplit = function(str) { return str.split('') }
 
+  describe('getFileFor', function() {
+    var response
+    beforeEach(mod(function($provide) {
+      response = null
+      $provide.factory('requestPapi', function(q) {
+        return function() {
+          return response
+        }
+      })
+    }))
+    it('should get file', function() {
+      inject(function(q, getFileFor) {
+        response = q.when({body: 'bar'})
+        expect(getFileFor('http://foo')).toResolveWith('bar')
+      })
+    })
+    it('should transform failure to JS level', function() {
+      inject(function(q, getFileFor) {
+        response = q.reject({body: 'DummyReason'})
+        var resolved = false
+        getFileFor('http://foo').then(function(val) {
+          resolved = true
+          expect(val).toMatch('http://foo')
+          expect(val).toMatch('console.error')
+          expect(val).toMatch(/Failed to load/i)
+          expect(val).toMatch(/DummyReason/i)
+        })
+        expect(resolved).toBe(true)
+      })
+    })
+  })
+
   describe('recursive-resolver', function() {
     beforeEach(mod(function($provide) {
       var dependencyMap =
@@ -14,6 +46,48 @@ describe('loader', function() {
         }
       $provide.value('dependencyMap', dependencyMap); // override version here
     }))
+
+    describe('getWithDeps', function() {
+      var response
+      beforeEach(mod(function($provide) {
+        response = null
+        $provide.factory('requestPapi', function(q) {
+          return function() {
+            return response
+          }
+        })
+      }))
+      it('should work', function() {
+        inject(function(getWithDeps, memCache, q) {
+          response = q.when({body:'DummyFileContent'})
+          expect(getWithDeps(['http://a'])).toResolveWith('DummyFileContent')
+        })
+      })
+      it('should handle failure', function() {
+        inject(function(getWithDeps, memCache, q) {
+          response = q.reject({body: 'DummyFailReason'})
+          var resolved
+          getWithDeps(['http://a']).then(function(val) {
+            resolved = true
+            expect(val).toMatch(/console.error/)
+          })
+          expect(resolved).toBe(true)
+        })
+      })
+      it('should handle failure, gracefully', function() {
+        inject(function(getWithDeps, memCache, q) {
+          response = q.reject({body: 'DummyFailReason'})
+          var resolved
+          getWithDeps(['github://a/b']).then(function(val) {
+            resolved = true
+            expect(val).toMatch(/console.error/)
+            expect(val).toMatch(/virtual file/i)
+          })
+          expect(resolved).toBe(true)
+        })
+      })
+    })
+
     describe('sync', function() {
       it('should resolve recursively', function() {
 
